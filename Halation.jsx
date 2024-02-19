@@ -62,8 +62,6 @@ function colorOverlay() {
 }
 
 
-
-
 function saveClose() {
 	var file_ending = app.activeDocument.name.split('.').pop().toLowerCase();
 	var fPath = app.activeDocument.path;
@@ -112,8 +110,8 @@ var doc_scale = negative_size.value / 3600;
 
 // Sets up existing image layer
 app.activeDocument.activeLayer.isBackgroundLayer = false; // Unlocks background layer
-var negativelayer = app.activeDocument.activeLayer;
-app.activeDocument.activeLayer.name = "original"; // Names background layer
+var imagelayer = app.activeDocument.activeLayer;
+imagelayer.name = "original"; // Names background layer
 
 
 
@@ -123,6 +121,20 @@ app.activeDocument.activeLayer.name = "original"; // Names background layer
 //
 
 //try {
+	
+	var halationlayer = imagelayer.duplicate();
+	halationlayer.name = "halation"; // Names halation layer.
+	
+	halationlayer.threshold(245);
+	
+	app.activeDocument.activeLayer = halationlayer;
+	
+	colorOverlay();	
+	
+	var halationcutoutlayer = halationlayer.duplicate();
+	halationcutoutlayer.name = "halation cutout"; // Names halation cutout layer.
+	
+	
 	
 	
 //} catch (e) { alert(e); }
