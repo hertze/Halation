@@ -9,6 +9,15 @@
 #target photoshop
 
 
+// Settings ------------------------------------------------------------
+
+var threshold = 245;
+var blur_radius = 40;
+var effect_opacity = 100;
+
+// ---------------------------------------------------------------------
+
+
 function colorOverlay() {
 	
 	var idset = stringIDToTypeID( "set" );
@@ -61,7 +70,7 @@ function colorOverlay() {
 	
 }
 
-funtion rasterizeLayer() {
+function rasterizeLayer() {
 	
 	var idrasterizeLayer = stringIDToTypeID( "rasterizeLayer" );
 		var desc243 = new ActionDescriptor();
@@ -144,16 +153,25 @@ imagelayer.name = "original"; // Names background layer
 	var halationlayer = imagelayer.duplicate();
 	halationlayer.name = "halation"; // Names halation layer.
 	
-	halationlayer.threshold(245);
+	halationlayer.threshold(threshold);
 	
 	app.activeDocument.activeLayer = halationlayer;
 	
-	colorOverlay();	
+	colorOverlay();
+	
+	rasterizeLayer();
 	
 	var halationcutoutlayer = halationlayer.duplicate();
 	halationcutoutlayer.name = "halation cutout"; // Names halation cutout layer.
+	halationcutoutlayer.blendMode = BlendMode.DIFFERENCE;
 	
+	halationlayer.applyGaussianBlur(Math.round(doc_scale*blur_radius));
+	halationlayer.blendMode = BlendMode.SCREEN;
 	
+	halationcutoutlayer.merge();
 	
+	halationlayer.opacity = effect_opacity;
+	
+	halationlayer.merge();
 	
 //} catch (e) { alert(e); }
