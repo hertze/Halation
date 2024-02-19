@@ -148,7 +148,7 @@ imagelayer.name = "original"; // Names background layer
 // MAIN ROUTINE
 //
 
-//try {
+try {
 	
 	var halationlayer = imagelayer.duplicate();
 	halationlayer.name = "halation"; // Names halation layer.
@@ -174,4 +174,4 @@ imagelayer.name = "original"; // Names background layer
 	
 	halationlayer.merge();
 	
-//} catch (e) { alert(e); }
+} catch (e) { alert(e); }
