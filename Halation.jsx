@@ -11,6 +11,7 @@
 
 // Settings ------------------------------------------------------------
 
+var save = false;
 var threshold = 245;
 var blur_radius = 40;
 var effect_opacity = 100;
@@ -173,5 +174,7 @@ try {
 	halationlayer.opacity = effect_opacity;
 	
 	halationlayer.merge();
+	
+	if (save == true ) { saveClose(); }
 	
 } catch (e) { alert(e); }
