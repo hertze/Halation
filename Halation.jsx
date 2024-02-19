@@ -9,6 +9,61 @@
 #target photoshop
 
 
+function colorOverlay() {
+	
+	var idset = stringIDToTypeID( "set" );
+		var desc239 = new ActionDescriptor();
+		var idnull = stringIDToTypeID( "null" );
+			var ref3 = new ActionReference();
+			var idproperty = stringIDToTypeID( "property" );
+			var idlayerEffects = stringIDToTypeID( "layerEffects" );
+			ref3.putProperty( idproperty, idlayerEffects );
+			var idlayer = stringIDToTypeID( "layer" );
+			var idordinal = stringIDToTypeID( "ordinal" );
+			var idtargetEnum = stringIDToTypeID( "targetEnum" );
+			ref3.putEnumerated( idlayer, idordinal, idtargetEnum );
+		desc239.putReference( idnull, ref3 );
+		var idto = stringIDToTypeID( "to" );
+			var desc240 = new ActionDescriptor();
+			var idscale = stringIDToTypeID( "scale" );
+			var idpercentUnit = stringIDToTypeID( "percentUnit" );
+			desc240.putUnitDouble( idscale, idpercentUnit, 416.666667 );
+			var idsolidFill = stringIDToTypeID( "solidFill" );
+				var desc241 = new ActionDescriptor();
+				var idenabled = stringIDToTypeID( "enabled" );
+				desc241.putBoolean( idenabled, true );
+				var idpresent = stringIDToTypeID( "present" );
+				desc241.putBoolean( idpresent, true );
+				var idshowInDialog = stringIDToTypeID( "showInDialog" );
+				desc241.putBoolean( idshowInDialog, true );
+				var idmode = stringIDToTypeID( "mode" );
+				var idblendMode = stringIDToTypeID( "blendMode" );
+				var idmultiply = stringIDToTypeID( "multiply" );
+				desc241.putEnumerated( idmode, idblendMode, idmultiply );
+				var idcolor = stringIDToTypeID( "color" );
+					var desc242 = new ActionDescriptor();
+					var idred = stringIDToTypeID( "red" );
+					desc242.putDouble( idred, 255.000000 );
+					var idgrain = stringIDToTypeID( "grain" );
+					desc242.putDouble( idgrain, 12.003891 );
+					var idblue = stringIDToTypeID( "blue" );
+					desc242.putDouble( idblue, 0.003891 );
+				var idRGBColor = stringIDToTypeID( "RGBColor" );
+				desc241.putObject( idcolor, idRGBColor, desc242 );
+				var idopacity = stringIDToTypeID( "opacity" );
+				var idpercentUnit = stringIDToTypeID( "percentUnit" );
+				desc241.putUnitDouble( idopacity, idpercentUnit, 100.000000 );
+			var idsolidFill = stringIDToTypeID( "solidFill" );
+			desc240.putObject( idsolidFill, idsolidFill, desc241 );
+		var idlayerEffects = stringIDToTypeID( "layerEffects" );
+		desc239.putObject( idto, idlayerEffects, desc240 );
+	executeAction( idset, desc239, DialogModes.NO );
+	
+}
+
+
+
+
 function saveClose() {
 	var file_ending = app.activeDocument.name.split('.').pop().toLowerCase();
 	var fPath = app.activeDocument.path;
