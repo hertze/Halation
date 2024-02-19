@@ -14,7 +14,7 @@
 var save = false;
 var threshold = 245;
 var blur_radius = 40;
-var effect_gamma = 1;
+var effect_gamma = 10;
 
 // ---------------------------------------------------------------------
 
@@ -316,10 +316,33 @@ try {
 		halationcutoutlayer.blendMode = BlendMode.DIFFERENCE;
 		
 		halationlayer.applyGaussianBlur(Math.round(doc_scale*blur_radius));
+		
 		halationlayer.blendMode = BlendMode.SCREEN;
 		halationcutoutlayer.merge();
+		
+		orangehalationlayer = halationlayer.duplicate();
+		orangehalationlayer.name = "orange halation";
+		
+		orangehalationlayer.adjustLevels(100, 255, 1.7, 0, 150);
+		
+		var yellowlayer = app.activeDocument.artLayers.add();
+		yellowlayer.name = "yellow";
+		yellowlayer.blendMode = BlendMode.HUE;
+		
+		var myColor_yellow = new SolidColor();  
+		myColor_yellow.rgb.red = 255;  
+		myColor_yellow.rgb.green = 215;  
+		myColor_yellow.rgb.blue = 0;
+		
+		app.activeDocument.selection.selectAll();
+		app.activeDocument.selection.fill(myColor_yellow); // Fill the layer with black
+		
+		yellowlayer.merge();
+		
 		halationlayer.adjustLevels(0, 255, effect_gamma/10, 0, 255);
 		app.activeDocument.flatten();
+		
+		app.activeDocument.selection.deselect();
 		
 		if (save == true ) { saveClose(); }
 	
