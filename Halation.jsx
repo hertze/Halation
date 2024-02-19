@@ -19,6 +19,27 @@ var effect_opacity = 100;
 // ---------------------------------------------------------------------
 
 
+// DO NOT EDIT BELOW THIS LINE -----------------------------------------
+
+/*
+// BEGIN__HARVEST_EXCEPTION_ZSTRING
+<javascriptresource> 
+<name>Halation</name> 
+<menu>automate</menu>
+<enableinfo>true</enableinfo>
+<eventid>aded9a83-71d4-4d2b-88d6-17198e86d9e0</eventid>
+<terminology><![CDATA[<< /Version 1
+					   /Events <<
+					   /aded9a83-71d4-4d2b-88d6-17198e86d9e0 [(Halation) <<
+					   /recipe [(Recipe) /string]
+					   /savestatus [(Save) /boolean]
+					   >>]
+						>>
+					 >> ]]></terminology>
+</javascriptresource>
+// END__HARVEST_EXCEPTION_ZSTRING
+*/
+
 function colorOverlay() {
 	
 	var idset = stringIDToTypeID( "set" );
@@ -173,7 +194,7 @@ try {
 	
 	halationlayer.opacity = effect_opacity;
 	
-	halationlayer.merge();
+	app.activeDocument.flatten();
 	
 	if (save == true ) { saveClose(); }
 	
