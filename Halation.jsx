@@ -61,7 +61,24 @@ function colorOverlay() {
 	
 }
 
-
+funtion rasterizeLayer() {
+	
+	var idrasterizeLayer = stringIDToTypeID( "rasterizeLayer" );
+		var desc243 = new ActionDescriptor();
+		var idnull = stringIDToTypeID( "null" );
+			var ref3 = new ActionReference();
+			var idlayer = stringIDToTypeID( "layer" );
+			var idordinal = stringIDToTypeID( "ordinal" );
+			var idtargetEnum = stringIDToTypeID( "targetEnum" );
+			ref3.putEnumerated( idlayer, idordinal, idtargetEnum );
+		desc243.putReference( idnull, ref3 );
+		var idwhat = stringIDToTypeID( "what" );
+		var idrasterizeItem = stringIDToTypeID( "rasterizeItem" );
+		var idlayerStyle = stringIDToTypeID( "layerStyle" );
+		desc243.putEnumerated( idwhat, idrasterizeItem, idlayerStyle );
+	executeAction( idrasterizeLayer, desc243, DialogModes.NO );
+	
+}
 
 
 function saveClose() {
