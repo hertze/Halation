@@ -323,7 +323,7 @@ try {
 		orangehalationlayer = halationlayer.duplicate();
 		orangehalationlayer.name = "orange halation";
 		
-		orangehalationlayer.adjustLevels(120, 165, 1, 0, 255);
+		orangehalationlayer.adjustLevels(50, 205, 1, 0, 255);
 		
 		var yellowlayer = app.activeDocument.artLayers.add();
 		yellowlayer.name = "yellow";
