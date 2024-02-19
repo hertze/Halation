@@ -24,6 +24,6 @@ The script takes three settings, written as a semicolom-separated text string (r
 
 1. The highlight threshold, from `1` to `255`.
 
-2. The blur radius.
+2. The halo radius.
 
-3. The opacity (strength) of the effect.
+3. The opacity (strength) of the effect, from `1` to `100`.
