@@ -296,33 +296,41 @@ imagelayer.name = "original"; // Names background layer
 
 try {
 	
+	var executeScript = true;
+	var isCancelled = false;
 	var runtimesettings = getRecipe();
 	if (runtimesettings.recipe != "none") { processRecipe(runtimesettings); }
 	
-	var halationlayer = imagelayer.duplicate();
-	halationlayer.name = "halation"; // Names halation layer.
 	
-	halationlayer.threshold(threshold);
 	
-	app.activeDocument.activeLayer = halationlayer;
+	if (executeScript == true) {
+		
+		var halationlayer = imagelayer.duplicate();
+		halationlayer.name = "halation"; // Names halation layer.
+		
+		halationlayer.threshold(threshold);
+		
+		app.activeDocument.activeLayer = halationlayer;
+		
+		colorOverlay();
+		
+		rasterizeLayer();
+		
+		var halationcutoutlayer = halationlayer.duplicate();
+		halationcutoutlayer.name = "halation cutout"; // Names halation cutout layer.
+		halationcutoutlayer.blendMode = BlendMode.DIFFERENCE;
+		
+		halationlayer.applyGaussianBlur(Math.round(doc_scale*blur_radius));
+		halationlayer.blendMode = BlendMode.SCREEN;
+		
+		halationcutoutlayer.merge();
+		
+		halationlayer.opacity = effect_opacity;
+		
+		app.activeDocument.flatten();
+		
+		if (save == true ) { saveClose(); }
 	
-	colorOverlay();
-	
-	rasterizeLayer();
-	
-	var halationcutoutlayer = halationlayer.duplicate();
-	halationcutoutlayer.name = "halation cutout"; // Names halation cutout layer.
-	halationcutoutlayer.blendMode = BlendMode.DIFFERENCE;
-	
-	halationlayer.applyGaussianBlur(Math.round(doc_scale*blur_radius));
-	halationlayer.blendMode = BlendMode.SCREEN;
-	
-	halationcutoutlayer.merge();
-	
-	halationlayer.opacity = effect_opacity;
-	
-	app.activeDocument.flatten();
-	
-	if (save == true ) { saveClose(); }
+	}
 	
 } catch (e) { alert(e); }
