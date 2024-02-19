@@ -26,4 +26,4 @@ The script takes three settings, written as a semicolom-separated text string (r
 
 2. The halo radius.
 
-3. The opacity (strength) of the effect, from `1` to `100`.
+3. The strength of the effect, from `1` to `30`.

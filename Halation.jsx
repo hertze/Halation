@@ -14,7 +14,7 @@
 var save = false;
 var threshold = 245;
 var blur_radius = 40;
-var effect_opacity = 100;
+var effect_gamma = 1;
 
 // ---------------------------------------------------------------------
 
@@ -149,13 +149,13 @@ function processRecipe(runtimesettings) {
 	thisRecipe = thisRecipe.replace(/;+$/, ""); // Removes trailing ;
 	
 	// Check recipe against syntax
-	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|([1-9][0-9])|100);([0-9]|([1-9][0-9])|100)$', 'gm');
+	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|([1-9][0-9])|100);([1-9]|[1-2][0-9]|30)$', 'gm');
 	
 	if (regex.exec(thisRecipe) !== null) {
 		thisRecipe = thisRecipe.split(";"); // Splits into array at ;
 		threshold = parseInt(thisRecipe[0]);
 		blur_radius = parseInt(thisRecipe[1]);
-		effect_opacity = parseInt(thisRecipe[2]);
+		effect_gamma = parseInt(thisRecipe[2]);
 
 	} else {
 		executeScript = false;
@@ -301,19 +301,14 @@ try {
 	var runtimesettings = getRecipe();
 	if (runtimesettings.recipe != "none") { processRecipe(runtimesettings); }
 	
-	
-	
 	if (executeScript == true) {
 		
 		var halationlayer = imagelayer.duplicate();
 		halationlayer.name = "halation"; // Names halation layer.
 		
 		halationlayer.threshold(threshold);
-		
 		app.activeDocument.activeLayer = halationlayer;
-		
 		colorOverlay();
-		
 		rasterizeLayer();
 		
 		var halationcutoutlayer = halationlayer.duplicate();
@@ -322,11 +317,8 @@ try {
 		
 		halationlayer.applyGaussianBlur(Math.round(doc_scale*blur_radius));
 		halationlayer.blendMode = BlendMode.SCREEN;
-		
 		halationcutoutlayer.merge();
-		
-		halationlayer.opacity = effect_opacity;
-		
+		halationlayer.adjustLevels(0, 255, effect_gamma/10, 0, 255);
 		app.activeDocument.flatten();
 		
 		if (save == true ) { saveClose(); }
