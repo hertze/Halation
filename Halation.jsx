@@ -304,16 +304,20 @@ try {
 	
 	if (executeScript == true) {
 		
-		var cutlayer = imagelayer.duplicate();
-		cutlayer.name = "cut"; // Names halation layer.
+		var orangecutlayer = imagelayer.duplicate();
+		orangecutlayer.name = "cut"; // Names halation layer.
 		
 		var orangelayer = imagelayer.duplicate();
 		orangelayer.name = "orange"; // Names halation layer.
 		
+		var redcutlayer = imagelayer.duplicate();
+		redcutlayer.name = "cut"; // Names halation layer.
+		
 		var redlayer = imagelayer.duplicate();
 		redlayer.name = "red"; // Names halation layer.
 		
-		cutlayer.threshold(threshold);
+		orangecutlayer.threshold(threshold);
+		redcutlayer.threshold(threshold-10);
 		orangelayer.threshold(threshold);
 		redlayer.threshold(threshold-10);
 		
@@ -328,14 +332,19 @@ try {
 		redlayer.applyGaussianBlur(Math.round(doc_scale*blur_radius));
 		orangelayer.applyGaussianBlur(Math.round(doc_scale*blur_radius));
 		
+		orangecutlayer.invert();
+		orangecutlayer.blendMode = BlendMode.MULTIPLY;
+		orangecutlayer.merge();
+		
+		redcutlayer.invert();
+		redcutlayer.blendMode = BlendMode.MULTIPLY;
+		redcutlayer.merge();
+		
+		//throw new Error('Parameter is not a number!');
 		orangelayer.blendMode = BlendMode.SCREEN;
-		orangelayer.merge();
-		
-		cutlayer.blendMode = BlendMode.MULTIPLY;
-		cutlayer.invert();
-		cutlayer.merge();
-		
+		orangelayer.merge();	
 		redlayer.blendMode = BlendMode.SCREEN;
+		
 		redlayer.opacity = effect_opacity;
 		redlayer.adjustLevels(0, 255, effect_contrast/10, 0, 255);
 		app.activeDocument.flatten();
