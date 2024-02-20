@@ -20,12 +20,14 @@ You run the script by running on of the supplied actions, or by making your own 
 
 ## Recipes
 
-The script takes three settings, written as a semicolom-separated text string (recipe):
+The script takes three settings, written as a semicolon-separated text string (recipe):
 
 1. The highlight threshold, from `1` to `255`.
 
-2. The halo radius.
+2. The bloom (halo radius), from `1` to `100`.
 
-3. The contrast of the halo, from `1` to `30`.
+3. The amount of green in the inner halation. `0` results in pure red and `255` in pure yellow.
 
-4. The opacity of the effect, from `1` to `100`.
+4. The contrast of the halo, from `1` to `30`.
+
+5. The opacity of the effect, from `1` to `100`.

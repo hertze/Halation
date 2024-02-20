@@ -13,7 +13,8 @@
 
 var save = false;
 var threshold = 245;
-var blur_radius = 40;
+var bloom = 40;
+var green = 130;
 var effect_contrast = 10;
 var effect_opacity = 100;
 
@@ -150,14 +151,15 @@ function processRecipe(runtimesettings) {
 	thisRecipe = thisRecipe.replace(/;+$/, ""); // Removes trailing ;
 	
 	// Check recipe against syntax
-	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|([1-9][0-9])|100);([1-9]|[1-2][0-9]|30);([0-9]|([1-9][0-9])|100)$', 'gm');
+	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|([1-9][0-9])|100);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([1-9]|[1-2][0-9]|30);([0-9]|([1-9][0-9])|100)$', 'gm');
 	
 	if (regex.exec(thisRecipe) !== null) {
 		thisRecipe = thisRecipe.split(";"); // Splits into array at ;
 		threshold = parseInt(thisRecipe[0]);
-		blur_radius = parseInt(thisRecipe[1]);
-		effect_contrast = parseInt(thisRecipe[2]);
-		effect_opacity = parseInt(thisRecipe[3]);
+		bloom = parseInt(thisRecipe[1]);
+		green = parseInt(thisRecipe[2]);
+		effect_contrast = parseInt(thisRecipe[3]);
+		effect_opacity = parseInt(thisRecipe[4]);
 
 	} else {
 		executeScript = false;
@@ -322,15 +324,15 @@ try {
 		redlayer.threshold(threshold-10);
 		
 		app.activeDocument.activeLayer = redlayer;
-		colorOverlay(255.000000, 0);
+		colorOverlay(255, 0);
 		rasterizeLayer();
 		
 		app.activeDocument.activeLayer = orangelayer;
-		colorOverlay(255.000000, 130.000000);
+		colorOverlay(255, green);
 		rasterizeLayer();
 		
-		redlayer.applyGaussianBlur(Math.round(doc_scale*blur_radius));
-		orangelayer.applyGaussianBlur(Math.round(doc_scale*blur_radius));
+		redlayer.applyGaussianBlur(Math.round(doc_scale*bloom));
+		orangelayer.applyGaussianBlur(Math.round(doc_scale*bloom));
 		
 		orangecutlayer.invert();
 		orangecutlayer.blendMode = BlendMode.MULTIPLY;
