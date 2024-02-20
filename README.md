@@ -26,7 +26,7 @@ The script takes five settings, written as a semicolon-separated text string (re
 
 2. The bloom (halo radius), from `1` to `100`.
 
-3. The amount of green in the inner halation. `0` results in pure red and `255` in pure yellow.
+3. The amount of green added to the inner halation. `0` results in pure red and `255` in pure yellow.
 
 4. The contrast of the halo, from `1` to `30`.
 
