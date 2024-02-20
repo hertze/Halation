@@ -14,7 +14,8 @@
 var save = false;
 var threshold = 245;
 var blur_radius = 40;
-var effect_gamma = 10;
+var effect_contrast = 10;
+var effect_opacity = 100;
 
 // ---------------------------------------------------------------------
 
@@ -149,13 +150,14 @@ function processRecipe(runtimesettings) {
 	thisRecipe = thisRecipe.replace(/;+$/, ""); // Removes trailing ;
 	
 	// Check recipe against syntax
-	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|([1-9][0-9])|100);([1-9]|[1-2][0-9]|30)$', 'gm');
+	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|([1-9][0-9])|100);([1-9]|[1-2][0-9]|30);([0-9]|([1-9][0-9])|100)$', 'gm');
 	
 	if (regex.exec(thisRecipe) !== null) {
 		thisRecipe = thisRecipe.split(";"); // Splits into array at ;
 		threshold = parseInt(thisRecipe[0]);
 		blur_radius = parseInt(thisRecipe[1]);
-		effect_gamma = parseInt(thisRecipe[2]);
+		effect_contrast = parseInt(thisRecipe[2]);
+		effect_opacity = parseInt(thisRecipe[3]);
 
 	} else {
 		executeScript = false;
@@ -164,7 +166,7 @@ function processRecipe(runtimesettings) {
 }
 
 
-function colorOverlay() {
+function colorOverlay(red, green) {
 	
 	var idset = stringIDToTypeID( "set" );
 		var desc239 = new ActionDescriptor();
@@ -198,11 +200,11 @@ function colorOverlay() {
 				var idcolor = stringIDToTypeID( "color" );
 					var desc242 = new ActionDescriptor();
 					var idred = stringIDToTypeID( "red" );
-					desc242.putDouble( idred, 255.000000 );
+					desc242.putDouble( idred, red );
 					var idgrain = stringIDToTypeID( "grain" );
-					desc242.putDouble( idgrain, 12.003891 );
+					desc242.putDouble( idgrain, green );
 					var idblue = stringIDToTypeID( "blue" );
-					desc242.putDouble( idblue, 0.003891 );
+					desc242.putDouble( idblue, 0.000000 );
 				var idRGBColor = stringIDToTypeID( "RGBColor" );
 				desc241.putObject( idcolor, idRGBColor, desc242 );
 				var idopacity = stringIDToTypeID( "opacity" );
@@ -289,7 +291,6 @@ imagelayer.name = "original"; // Names background layer
 
 
 
-
 //
 // MAIN ROUTINE
 //
@@ -303,46 +304,41 @@ try {
 	
 	if (executeScript == true) {
 		
-		var halationlayer = imagelayer.duplicate();
-		halationlayer.name = "halation"; // Names halation layer.
+		var cutlayer = imagelayer.duplicate();
+		cutlayer.name = "cut"; // Names halation layer.
 		
-		halationlayer.threshold(threshold);
-		app.activeDocument.activeLayer = halationlayer;
-		colorOverlay();
+		var orangelayer = imagelayer.duplicate();
+		orangelayer.name = "orange"; // Names halation layer.
+		
+		var redlayer = imagelayer.duplicate();
+		redlayer.name = "red"; // Names halation layer.
+		
+		cutlayer.threshold(threshold);
+		orangelayer.threshold(threshold);
+		redlayer.threshold(threshold-10);
+		
+		app.activeDocument.activeLayer = redlayer;
+		colorOverlay(255.000000, 0);
 		rasterizeLayer();
 		
-		var halationcutoutlayer = halationlayer.duplicate();
-		halationcutoutlayer.name = "halation cutout"; // Names halation cutout layer.
-		halationcutoutlayer.blendMode = BlendMode.DIFFERENCE;
+		app.activeDocument.activeLayer = orangelayer;
+		colorOverlay(255.000000, 130.000000);
+		rasterizeLayer();
 		
-		halationlayer.applyGaussianBlur(Math.round(doc_scale*blur_radius));
+		redlayer.applyGaussianBlur(Math.round(doc_scale*blur_radius));
+		orangelayer.applyGaussianBlur(Math.round(doc_scale*blur_radius));
 		
-		halationlayer.blendMode = BlendMode.SCREEN;
-		halationcutoutlayer.merge();
+		orangelayer.blendMode = BlendMode.SCREEN;
+		orangelayer.merge();
 		
-		orangehalationlayer = halationlayer.duplicate();
-		orangehalationlayer.name = "orange halation";
+		cutlayer.blendMode = BlendMode.MULTIPLY;
+		cutlayer.invert();
+		cutlayer.merge();
 		
-		orangehalationlayer.adjustLevels(50, 205, 1, 0, 255);
-		
-		var yellowlayer = app.activeDocument.artLayers.add();
-		yellowlayer.name = "yellow";
-		yellowlayer.blendMode = BlendMode.HUE;
-		
-		var myColor_yellow = new SolidColor();  
-		myColor_yellow.rgb.red = 255;  
-		myColor_yellow.rgb.green = 215;  
-		myColor_yellow.rgb.blue = 0;
-		
-		app.activeDocument.selection.selectAll();
-		app.activeDocument.selection.fill(myColor_yellow); // Fill the layer with black
-		
-		yellowlayer.merge();
-		
-		halationlayer.adjustLevels(0, 255, effect_gamma/10, 0, 255);
+		redlayer.blendMode = BlendMode.SCREEN;
+		redlayer.opacity = effect_opacity;
+		redlayer.adjustLevels(0, 255, effect_contrast/10, 0, 255);
 		app.activeDocument.flatten();
-		
-		app.activeDocument.selection.deselect();
 		
 		if (save == true ) { saveClose(); }
 	
