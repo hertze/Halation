@@ -305,16 +305,16 @@ try {
 	if (executeScript == true) {
 		
 		var orangecutlayer = imagelayer.duplicate();
-		orangecutlayer.name = "cut"; // Names halation layer.
+		orangecutlayer.name = "cut";
 		
 		var orangelayer = imagelayer.duplicate();
-		orangelayer.name = "orange"; // Names halation layer.
+		orangelayer.name = "orange";
 		
 		var redcutlayer = imagelayer.duplicate();
-		redcutlayer.name = "cut"; // Names halation layer.
+		redcutlayer.name = "cut";
 		
 		var redlayer = imagelayer.duplicate();
-		redlayer.name = "red"; // Names halation layer.
+		redlayer.name = "red";
 		
 		orangecutlayer.threshold(threshold);
 		redcutlayer.threshold(threshold-10);
@@ -340,7 +340,6 @@ try {
 		redcutlayer.blendMode = BlendMode.MULTIPLY;
 		redcutlayer.merge();
 		
-		//throw new Error('Parameter is not a number!');
 		orangelayer.blendMode = BlendMode.SCREEN;
 		orangelayer.merge();	
 		redlayer.blendMode = BlendMode.SCREEN;
