@@ -28,6 +28,6 @@ The script takes five settings, written as a semicolon-separated text string (re
 
 3. The amount of green added to the inner halation. `0` results in pure red and `255` in pure yellow.
 
-4. The contrast of the halo, from `1` to `30`.
+4. The strength of the effect, from `1` to `3`.
 
 5. The opacity of the effect, from `1` to `100`.

@@ -13,9 +13,9 @@
 
 var save = false;
 var threshold = 245;
-var bloom = 40;
+var bloom = 20;
 var green = 130;
-var effect_contrast = 10;
+var effect_multiply = 1;
 var effect_opacity = 100;
 
 // ---------------------------------------------------------------------
@@ -151,14 +151,14 @@ function processRecipe(runtimesettings) {
 	thisRecipe = thisRecipe.replace(/;+$/, ""); // Removes trailing ;
 	
 	// Check recipe against syntax
-	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|([1-9][0-9])|100);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([1-9]|[1-2][0-9]|30);([0-9]|([1-9][0-9])|100)$', 'gm');
+	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|([1-9][0-9])|100);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([1-3]);([0-9]|([1-9][0-9])|100)$', 'gm');
 	
 	if (regex.exec(thisRecipe) !== null) {
 		thisRecipe = thisRecipe.split(";"); // Splits into array at ;
 		threshold = parseInt(thisRecipe[0]);
 		bloom = parseInt(thisRecipe[1]);
 		green = parseInt(thisRecipe[2]);
-		effect_contrast = parseInt(thisRecipe[3]);
+		effect_multiply = parseInt(thisRecipe[3]);
 		effect_opacity = parseInt(thisRecipe[4]);
 
 	} else {
@@ -347,7 +347,12 @@ try {
 		redlayer.blendMode = BlendMode.SCREEN;
 		
 		redlayer.opacity = effect_opacity;
-		redlayer.adjustLevels(0, 255, effect_contrast/10, 0, 255);
+		
+		for(var i = 0; i < effect_multiply; i++) {
+			var multiply = redlayer.duplicate();
+			multiply.merge();
+		}
+		
 		app.activeDocument.flatten();
 		
 		if (save == true ) { saveClose(); }
