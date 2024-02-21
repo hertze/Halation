@@ -34,4 +34,4 @@ The script takes five settings, written as a semicolon-separated text string (re
 
 ## Tips and tricks
 
-If you want to remove the halation from some parts of the image (sunset skies, for instance), hit option + Z on a Mac, or ctrl + Z on a PC, to undo the last script step. You then get the halation as a separate layer, on which you can brush out halation with black color.
+If you want to remove the halation from some parts of the image (sunset skies, for instance), hit option + Z on a Mac, or ctrl + Z on a PC, to undo the last script step. You then get the halation as a separate layer, on which you can brush out parts with black color.
