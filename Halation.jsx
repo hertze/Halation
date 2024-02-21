@@ -348,7 +348,7 @@ try {
 		
 		redlayer.opacity = effect_opacity;
 		
-		for(var i = 0; i < effect_multiply; i++) {
+		for(var i = 0; i < effect_multiply - 1; i++) {
 			var multiply = redlayer.duplicate();
 			multiply.merge();
 		}
