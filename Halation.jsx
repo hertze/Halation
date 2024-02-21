@@ -15,8 +15,10 @@ var save = false;
 var threshold = 245;
 var bloom = 20;
 var green = 130;
+var blue = 0;
 var effect_multiply = 1;
 var effect_opacity = 100;
+var monochrome = false;
 
 // ---------------------------------------------------------------------
 
@@ -151,15 +153,17 @@ function processRecipe(runtimesettings) {
 	thisRecipe = thisRecipe.replace(/;+$/, ""); // Removes trailing ;
 	
 	// Check recipe against syntax
-	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|([1-9][0-9])|100);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([1-3]);([0-9]|([1-9][0-9])|100)$', 'gm');
+	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|([1-9][0-9])|100);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([1-3]);([0-9]|([1-9][0-9])|100);(true|false)$', 'gm');
 	
 	if (regex.exec(thisRecipe) !== null) {
 		thisRecipe = thisRecipe.split(";"); // Splits into array at ;
 		threshold = parseInt(thisRecipe[0]);
 		bloom = parseInt(thisRecipe[1]);
 		green = parseInt(thisRecipe[2]);
-		effect_multiply = parseInt(thisRecipe[3]);
-		effect_opacity = parseInt(thisRecipe[4]);
+		blue = parseInt(thisRecipe[3]);
+		effect_multiply = parseInt(thisRecipe[4]);
+		effect_opacity = parseInt(thisRecipe[5]);
+		monochrome = (thisRecipe[6].toLowerCase() === "true");
 
 	} else {
 		executeScript = false;
@@ -168,7 +172,7 @@ function processRecipe(runtimesettings) {
 }
 
 
-function colorOverlay(red, green) {
+function colorOverlay(red, green, blue) {
 	
 	var idset = stringIDToTypeID( "set" );
 		var desc239 = new ActionDescriptor();
@@ -206,7 +210,7 @@ function colorOverlay(red, green) {
 					var idgrain = stringIDToTypeID( "grain" );
 					desc242.putDouble( idgrain, green );
 					var idblue = stringIDToTypeID( "blue" );
-					desc242.putDouble( idblue, 0.000000 );
+					desc242.putDouble( idblue, blue );
 				var idRGBColor = stringIDToTypeID( "RGBColor" );
 				desc241.putObject( idcolor, idRGBColor, desc242 );
 				var idopacity = stringIDToTypeID( "opacity" );
@@ -292,7 +296,6 @@ var imagelayer = app.activeDocument.activeLayer;
 imagelayer.name = "original"; // Names background layer
 
 
-
 //
 // MAIN ROUTINE
 //
@@ -324,11 +327,19 @@ try {
 		redlayer.threshold(threshold-10);
 		
 		app.activeDocument.activeLayer = redlayer;
-		colorOverlay(255, 0);
+		if (monochrome == true) {
+			colorOverlay(200, 200, 200);
+		} else {
+			colorOverlay(255, 0, 0);
+		}
 		rasterizeLayer();
 		
 		app.activeDocument.activeLayer = orangelayer;
-		colorOverlay(255, green);
+		if (monochrome == true) {
+			colorOverlay(225, 225, 225);
+		} else {
+			colorOverlay(255, green, blue);
+		}
 		rasterizeLayer();
 		
 		redlayer.applyGaussianBlur(Math.round(doc_scale*bloom));
