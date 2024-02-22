@@ -14,11 +14,13 @@
 var save = false;
 var threshold = 245;
 var bloom = 20;
-var green = 130;
-var blue = 0;
 var effect_multiply = 1;
-var effect_opacity = 100;
-var monochrome = false;
+var red_inner = 255;
+var green_inner = 130;
+var blue_inner = 0;
+var red_outer = 255;
+var green_outer = 0;
+var blue_outer = 0;
 
 // ---------------------------------------------------------------------
 
@@ -153,18 +155,19 @@ function processRecipe(runtimesettings) {
 	thisRecipe = thisRecipe.replace(/;+$/, ""); // Removes trailing ;
 	
 	// Check recipe against syntax
-	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|([1-9][0-9])|100);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([1-3]);([0-9]|([1-9][0-9])|100);(true|false)$', 'gm');
+	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|([1-9][0-9])|100);([1-3]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]));([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$', 'gm');
 	
 	if (regex.exec(thisRecipe) !== null) {
 		thisRecipe = thisRecipe.split(";"); // Splits into array at ;
 		threshold = parseInt(thisRecipe[0]);
 		bloom = parseInt(thisRecipe[1]);
-		green = parseInt(thisRecipe[2]);
-		blue = parseInt(thisRecipe[3]);
-		effect_multiply = parseInt(thisRecipe[4]);
-		effect_opacity = parseInt(thisRecipe[5]);
-		monochrome = (thisRecipe[6].toLowerCase() === "true");
-
+		effect_multiply = parseInt(thisRecipe[2]);
+		red_inner = parseInt(thisRecipe[3]);
+		green_inner = parseInt(thisRecipe[4]);
+		blue_inner = parseInt(thisRecipe[5]);
+		red_outer = parseInt(thisRecipe[6]);
+		green_outer = parseInt(thisRecipe[7]);
+		blue_outer = parseInt(thisRecipe[8]);
 	} else {
 		executeScript = false;
 		alert("Sorry, but that recipe is faulty! Please check it's syntax and it's settings and then try again.");
@@ -300,13 +303,13 @@ imagelayer.name = "original"; // Names background layer
 // MAIN ROUTINE
 //
 
-try {
-	
-	var executeScript = true;
-	var isCancelled = false;
-	var runtimesettings = getRecipe();
-	if (runtimesettings.recipe != "none") { processRecipe(runtimesettings); }
-	
+
+var executeScript = true;
+var isCancelled = false;
+var runtimesettings = getRecipe();
+if (runtimesettings.recipe != "none") { processRecipe(runtimesettings); }
+
+try {	
 	if (executeScript == true) {
 		
 		var orangecutlayer = imagelayer.duplicate();
@@ -327,19 +330,11 @@ try {
 		redlayer.threshold(threshold-10);
 		
 		app.activeDocument.activeLayer = redlayer;
-		if (monochrome == true) {
-			colorOverlay(200, 200, 200);
-		} else {
-			colorOverlay(255, 0, 0);
-		}
+		colorOverlay(red_outer, green_outer, blue_outer);
 		rasterizeLayer();
 		
 		app.activeDocument.activeLayer = orangelayer;
-		if (monochrome == true) {
-			colorOverlay(225, 225, 225);
-		} else {
-			colorOverlay(255, green, blue);
-		}
+		colorOverlay(red_inner, green_inner, blue_inner);
 		rasterizeLayer();
 		
 		redlayer.applyGaussianBlur(Math.round(doc_scale*bloom));
@@ -356,8 +351,6 @@ try {
 		orangelayer.blendMode = BlendMode.SCREEN;
 		orangelayer.merge();	
 		redlayer.blendMode = BlendMode.SCREEN;
-		
-		redlayer.opacity = effect_opacity;
 		
 		for(var i = 0; i < effect_multiply - 1; i++) {
 			var multiply = redlayer.duplicate();

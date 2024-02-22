@@ -26,15 +26,20 @@ The script takes five settings, written as a semicolon-separated text string (re
 
 2. The bloom (halo radius), from `1` to `100`.
 
-3. The amount of green added to the inner halation, from `0` to `255`.
+3. The strength of the effect, from `1` to `3`.
 
-4. The amount of blue added to the inner halation, from `0` to `255`.
+4. The amount of red added to the inner halation, from `0` to `255`.
 
-5. The strength of the effect, from `1` to `3`.
+5. The amount of green added to the inner halation, from `0` to `255`.
 
-6. The opacity of the effect, from `1` to `100`.
+6. The amount of blue added to the inner halation, from `0` to `255`.
 
-7. Monochrome halation, `true` or `false`.
+7. The amount of red added to the outer halation, from `0` to `255`.
+
+8. The amount of green added to the outer halation, from `0` to `255`.
+
+9. The amount of blue added to the outer halation, from `0` to `255`.
+
 
 ## Tips and tricks
 
