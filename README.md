@@ -26,7 +26,7 @@ The script takes five settings, written as a semicolon-separated text string (re
 
 2. The bloom (halo radius), from `1` to `100`.
 
-3. The strength of the effect, from `1` to `3`.
+3. The squaring (multiplication with itself) of the effect, from `1` to `3`.
 
 4. The amount of red added to the inner halation, from `0` to `255`.
 
