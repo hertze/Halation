@@ -20,7 +20,7 @@ You run the script by running on of the supplied actions, or by making your own 
 
 ## Recipes
 
-The script takes five settings, written as a semicolon-separated text string (recipe):
+The script takes nine settings, written as a semicolon-separated text string (recipe):
 
 1. The highlight threshold, from `1` to `255`.
 
