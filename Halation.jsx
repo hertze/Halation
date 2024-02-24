@@ -25,7 +25,7 @@ var red_outer = 204;
 var green_outer = 17;
 var blue_outer = 0;
 var red_global = 13;
-var green_global = 2;
+var green_global = 4;
 var blue_global = 0;
 
 // ---------------------------------------------------------------------
@@ -323,12 +323,6 @@ if (runtimesettings.recipe != "none") { processRecipe(runtimesettings); }
 try {	
 	if (executeScript == true) {
 		
-		var globalcutlayer = imagelayer.duplicate();
-		globalcutlayer.name = "global cut";
-		
-		var globallayer = imagelayer.duplicate();
-		globallayer.name = "global";
-		
 		var orangecutlayer = imagelayer.duplicate();
 		orangecutlayer.name = "cut";
 		
@@ -341,6 +335,11 @@ try {
 		var redlayer = imagelayer.duplicate();
 		redlayer.name = "local";
 		
+		var globalcutlayer = imagelayer.duplicate();
+		globalcutlayer.name = "global cut";
+		
+		var globallayer = imagelayer.duplicate();
+		globallayer.name = "global";
 		
 		globalcutlayer.threshold(global_treshold);
 		globallayer.threshold(global_treshold-70);
@@ -348,15 +347,6 @@ try {
 		redcutlayer.threshold(threshold-10);
 		orangelayer.threshold(threshold);
 		redlayer.threshold(threshold-10);
-		
-		
-		app.activeDocument.activeLayer = globallayer;
-		colorOverlay(red_global, green_global, blue_global);
-		rasterizeLayer();
-		
-		app.activeDocument.activeLayer = globalcutlayer;
-		colorOverlay(red_global, green_global, blue_global);
-		rasterizeLayer();
 		
 		app.activeDocument.activeLayer = redlayer;
 		colorOverlay(red_outer, green_outer, blue_outer);
@@ -366,12 +356,18 @@ try {
 		colorOverlay(red_inner, green_inner, blue_inner);
 		rasterizeLayer();
 		
-		globallayer.applyGaussianBlur(Math.round(doc_scale*20));
 		redlayer.applyGaussianBlur(Math.round(doc_scale*bloom));
 		orangelayer.applyGaussianBlur(Math.round(doc_scale*bloom));
 		
 		globalcutlayer.blendMode = BlendMode.DIFFERENCE;
 		globalcutlayer.merge();
+		
+		globallayer.applyGaussianBlur(Math.round(doc_scale*20));
+		
+		app.activeDocument.activeLayer = globallayer;
+		colorOverlay(red_global, green_global, blue_global);
+		rasterizeLayer();
+		
 		globallayer.blendMode = BlendMode.SCREEN;
 		
 		var darken = globallayer.duplicate();
