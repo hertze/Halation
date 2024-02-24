@@ -16,6 +16,7 @@ var threshold = 245;
 var global_treshold = 220;
 var bloom = 15;
 var effect_multiply = 1;
+var darken_local = 40;
 var darken_global = 40;
 var red_inner = 204;
 var green_inner = 120;
@@ -160,7 +161,7 @@ function processRecipe(runtimesettings) {
 	thisRecipe = thisRecipe.replace(/;+$/, ""); // Removes trailing ;
 	
 	// Check recipe against syntax
-	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|([1-9][0-9])|100);([1-3]);([0-9]|([1-9][0-9])|100);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]));([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$', 'gm');
+	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|([1-9][0-9])|100);([1-3]);([0-9]|([1-9][0-9])|100);([0-9]|([1-9][0-9])|100);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]));([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$', 'gm');
 	
 	if (regex.exec(thisRecipe) !== null) {
 		thisRecipe = thisRecipe.split(";"); // Splits into array at ;
@@ -168,16 +169,17 @@ function processRecipe(runtimesettings) {
 		global_threshold = parseInt(thisRecipe[1]);
 		bloom = parseInt(thisRecipe[2]);
 		effect_multiply = parseInt(thisRecipe[3]);
-		darken_global = parseInt(thisRecipe[4]);
-		red_inner = parseInt(thisRecipe[5]);
-		green_inner = parseInt(thisRecipe[6]);
-		blue_inner = parseInt(thisRecipe[7]);
-		red_outer = parseInt(thisRecipe[8]);
-		green_outer = parseInt(thisRecipe[9]);
-		blue_outer = parseInt(thisRecipe[10]);
-		red_global = parseInt(thisRecipe[11]);
-		green_global = parseInt(thisRecipe[12]);
-		blue_global = parseInt(thisRecipe[13]);
+		darken_local = parseInt(thisRecipe[4]);
+		darken_global = parseInt(thisRecipe[5]);
+		red_inner = parseInt(thisRecipe[6]);
+		green_inner = parseInt(thisRecipe[7]);
+		blue_inner = parseInt(thisRecipe[8]);
+		red_outer = parseInt(thisRecipe[9]);
+		green_outer = parseInt(thisRecipe[10]);
+		blue_outer = parseInt(thisRecipe[11]);
+		red_global = parseInt(thisRecipe[12]);
+		green_global = parseInt(thisRecipe[13]);
+		blue_global = parseInt(thisRecipe[14]);
 	} else {
 		executeScript = false;
 		alert("Sorry, but that recipe is faulty! Please check it's syntax and it's settings and then try again.");
@@ -378,6 +380,7 @@ try {
 		darken.invert();
 		darken.blendMode = BlendMode.MULTIPLY;
 		darken.opacity = darken_global;
+		darken.merge();
 		
 		orangecutlayer.invert();
 		orangecutlayer.blendMode = BlendMode.MULTIPLY;
@@ -390,6 +393,13 @@ try {
 		orangelayer.blendMode = BlendMode.SCREEN;
 		orangelayer.merge();	
 		redlayer.blendMode = BlendMode.SCREEN;
+		
+		var darken_local = redlayer.duplicate();
+		darken_local.desaturate();
+		darken_local.invert();
+		darken_local.blendMode = BlendMode.MULTIPLY;
+		darken_local.opacity = darken_global;
+		darken_local.merge();
 		
 		for(var i = 0; i < effect_multiply - 1; i++) {
 			var multiply = redlayer.duplicate();
