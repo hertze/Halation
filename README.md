@@ -20,25 +20,35 @@ You run the script by running on of the supplied actions, or by making your own 
 
 ## Recipes
 
-The script takes nine settings, written as a semicolon-separated text string (recipe):
+The script takes 13 settings, written as a semicolon-separated text string (recipe):
 
-1. The highlight threshold, from `1` to `255`.
+1. The highlight threshold for local halation, from `1` to `255`.
+
+2. The threshold for global halation, from `1` to `255`. 
 
 2. The bloom (halo radius), from `1` to `100`.
 
 3. The squaring (multiplication with itself) of the effect, from `1` to `3`.
 
-4. The amount of red added to the inner halation, from `0` to `255`.
+4. How much to darken midtones as compensation for the global halation, from `1` to `100`.
 
-5. The amount of green added to the inner halation, from `0` to `255`.
+5. The red value of the inner halation, from `0` to `255`.
 
-6. The amount of blue added to the inner halation, from `0` to `255`.
+6. The green value of the inner halation, from `0` to `255`.
 
-7. The amount of red added to the outer halation, from `0` to `255`.
+7. The blue value of the inner halation, from `0` to `255`.
 
-8. The amount of green added to the outer halation, from `0` to `255`.
+8. The red value of the outer halation, from `0` to `255`.
 
-9. The amount of blue added to the outer halation, from `0` to `255`.
+9. The green value of the outer halation, from `0` to `255`.
+
+10. The blue value of the outer halation, from `0` to `255`.
+
+11. The blue value of the global halation, from `0` to `255`.
+
+12. The blue value of the global halation, from `0` to `255`.
+
+13. The blue value of the global halation, from `0` to `255`.
 
 
 ## Tips and tricks

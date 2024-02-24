@@ -371,11 +371,12 @@ try {
 		globallayer.blendMode = BlendMode.SCREEN;
 		
 		var darken = globallayer.duplicate();
+		darken.name = "darken midtones";
 		darken.desaturate();
 		darken.invert();
 		darken.blendMode = BlendMode.MULTIPLY;
 		darken.opacity = darken_global;
-		darken.merge();
+		//darken.merge();
 		
 		orangecutlayer.invert();
 		orangecutlayer.blendMode = BlendMode.MULTIPLY;
