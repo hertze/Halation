@@ -13,6 +13,7 @@
 
 var save = false;
 var threshold = 245;
+var global_treshold = 180;
 var bloom = 20;
 var effect_multiply = 1;
 var red_inner = 255;
@@ -21,6 +22,9 @@ var blue_inner = 0;
 var red_outer = 255;
 var green_outer = 0;
 var blue_outer = 0;
+var red_global = 10;
+var green_global = 5;
+var blue_global = 0;
 
 // ---------------------------------------------------------------------
 
@@ -312,6 +316,12 @@ if (runtimesettings.recipe != "none") { processRecipe(runtimesettings); }
 try {	
 	if (executeScript == true) {
 		
+		var globalcutlayer = imagelayer.duplicate();
+		globalcutlayer.name = "global cut";
+		
+		var globallayer = imagelayer.duplicate();
+		globallayer.name = "global";
+		
 		var orangecutlayer = imagelayer.duplicate();
 		orangecutlayer.name = "cut";
 		
@@ -324,10 +334,22 @@ try {
 		var redlayer = imagelayer.duplicate();
 		redlayer.name = "red";
 		
+		
+		globalcutlayer.threshold(global_treshold);
+		globallayer.threshold(global_treshold-50);
 		orangecutlayer.threshold(threshold);
 		redcutlayer.threshold(threshold-10);
 		orangelayer.threshold(threshold);
 		redlayer.threshold(threshold-10);
+		
+		
+		app.activeDocument.activeLayer = globallayer;
+		colorOverlay(red_global, green_global, blue_global);
+		rasterizeLayer();
+		
+		app.activeDocument.activeLayer = globalcutlayer;
+		colorOverlay(red_global, green_global, blue_global);
+		rasterizeLayer();
 		
 		app.activeDocument.activeLayer = redlayer;
 		colorOverlay(red_outer, green_outer, blue_outer);
@@ -337,8 +359,15 @@ try {
 		colorOverlay(red_inner, green_inner, blue_inner);
 		rasterizeLayer();
 		
+		globallayer.applyGaussianBlur(Math.round(doc_scale*15));
 		redlayer.applyGaussianBlur(Math.round(doc_scale*bloom));
 		orangelayer.applyGaussianBlur(Math.round(doc_scale*bloom));
+		
+		globalcutlayer.blendMode = BlendMode.DIFFERENCE;
+		globalcutlayer.merge();
+		globallayer.blendMode = BlendMode.SCREEN;
+		
+		//throw new Error('Parameter is not a number!');
 		
 		orangecutlayer.invert();
 		orangecutlayer.blendMode = BlendMode.MULTIPLY;
