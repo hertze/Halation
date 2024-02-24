@@ -13,17 +13,18 @@
 
 var save = false;
 var threshold = 245;
-var global_treshold = 180;
-var bloom = 20;
+var global_treshold = 220;
+var bloom = 15;
 var effect_multiply = 1;
-var red_inner = 255;
-var green_inner = 130;
+var darken_global = 40;
+var red_inner = 204;
+var green_inner = 120;
 var blue_inner = 0;
-var red_outer = 255;
-var green_outer = 0;
+var red_outer = 204;
+var green_outer = 17;
 var blue_outer = 0;
-var red_global = 10;
-var green_global = 5;
+var red_global = 13;
+var green_global = 2;
 var blue_global = 0;
 
 // ---------------------------------------------------------------------
@@ -159,19 +160,24 @@ function processRecipe(runtimesettings) {
 	thisRecipe = thisRecipe.replace(/;+$/, ""); // Removes trailing ;
 	
 	// Check recipe against syntax
-	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|([1-9][0-9])|100);([1-3]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]));([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$', 'gm');
+	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|([1-9][0-9])|100);([1-3]);([0-9]|([1-9][0-9])|100);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]));([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$', 'gm');
 	
 	if (regex.exec(thisRecipe) !== null) {
 		thisRecipe = thisRecipe.split(";"); // Splits into array at ;
 		threshold = parseInt(thisRecipe[0]);
-		bloom = parseInt(thisRecipe[1]);
-		effect_multiply = parseInt(thisRecipe[2]);
-		red_inner = parseInt(thisRecipe[3]);
-		green_inner = parseInt(thisRecipe[4]);
-		blue_inner = parseInt(thisRecipe[5]);
-		red_outer = parseInt(thisRecipe[6]);
-		green_outer = parseInt(thisRecipe[7]);
-		blue_outer = parseInt(thisRecipe[8]);
+		global_threshold = parseInt(thisRecipe[1]);
+		bloom = parseInt(thisRecipe[2]);
+		effect_multiply = parseInt(thisRecipe[3]);
+		darken_global = parseInt(thisRecipe[4]);
+		red_inner = parseInt(thisRecipe[5]);
+		green_inner = parseInt(thisRecipe[6]);
+		blue_inner = parseInt(thisRecipe[7]);
+		red_outer = parseInt(thisRecipe[8]);
+		green_outer = parseInt(thisRecipe[9]);
+		blue_outer = parseInt(thisRecipe[10]);
+		red_global = parseInt(thisRecipe[11]);
+		green_global = parseInt(thisRecipe[12]);
+		blue_global = parseInt(thisRecipe[13]);
 	} else {
 		executeScript = false;
 		alert("Sorry, but that recipe is faulty! Please check it's syntax and it's settings and then try again.");
@@ -332,11 +338,11 @@ try {
 		redcutlayer.name = "cut";
 		
 		var redlayer = imagelayer.duplicate();
-		redlayer.name = "red";
+		redlayer.name = "local";
 		
 		
 		globalcutlayer.threshold(global_treshold);
-		globallayer.threshold(global_treshold-50);
+		globallayer.threshold(global_treshold-70);
 		orangecutlayer.threshold(threshold);
 		redcutlayer.threshold(threshold-10);
 		orangelayer.threshold(threshold);
@@ -359,13 +365,20 @@ try {
 		colorOverlay(red_inner, green_inner, blue_inner);
 		rasterizeLayer();
 		
-		globallayer.applyGaussianBlur(Math.round(doc_scale*15));
+		globallayer.applyGaussianBlur(Math.round(doc_scale*20));
 		redlayer.applyGaussianBlur(Math.round(doc_scale*bloom));
 		orangelayer.applyGaussianBlur(Math.round(doc_scale*bloom));
 		
 		globalcutlayer.blendMode = BlendMode.DIFFERENCE;
 		globalcutlayer.merge();
 		globallayer.blendMode = BlendMode.SCREEN;
+		
+		var darken = globallayer.duplicate();
+		darken.desaturate();
+		darken.invert();
+		darken.blendMode = BlendMode.MULTIPLY;
+		darken.opacity = darken_global;
+		//darken.merge();
 		
 		//throw new Error('Parameter is not a number!');
 		
