@@ -378,9 +378,6 @@ try {
 		darken.invert();
 		darken.blendMode = BlendMode.MULTIPLY;
 		darken.opacity = darken_global;
-		//darken.merge();
-		
-		//throw new Error('Parameter is not a number!');
 		
 		orangecutlayer.invert();
 		orangecutlayer.blendMode = BlendMode.MULTIPLY;
