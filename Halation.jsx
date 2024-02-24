@@ -13,7 +13,7 @@
 
 var save = false;
 var threshold = 245;
-var global_treshold = 220;
+var global_treshold = 200;
 var bloom = 15;
 var effect_multiply = 1;
 var darken_local = 60;
@@ -342,7 +342,7 @@ try {
 		globallayer.name = "global";
 		
 		globalcutlayer.threshold(global_treshold);
-		globallayer.threshold(global_treshold-70);
+		globallayer.threshold(global_treshold-50);
 		orangecutlayer.threshold(threshold);
 		redcutlayer.threshold(threshold-10);
 		orangelayer.threshold(threshold);
