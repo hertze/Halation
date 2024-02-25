@@ -56,3 +56,5 @@ The script takes 13 settings, written as a semicolon-separated text string (reci
 1. If you want to remove the halation from some parts of the image (sunset skies, for instance), hit option + Z on a Mac, or ctrl + Z on a PC, to undo the last script step. You then get a folder with three layers, **local** for local halation, **darken midtones** that compensates for the increase in brightness that the global halation adds, and **global** with the global halation. With black selected you can simply brush out local and global halation you don't want in their respective layer.
 
 2. If you want to change the color values, darker colors results in a weaker effekt and brighter colors in a stronger effect. If you set the red, green and blue color to the same value you get a grayscale color, useful for monochrome halation.
+
+3. If you don't want any global halation, set #4, #11, #12 and #13 above to `0`.
