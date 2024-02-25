@@ -342,7 +342,7 @@ try {
 		globallayer.name = "global";
 		
 		globalcutlayer.threshold(global_treshold);
-		globallayer.threshold(global_treshold-50);
+		globallayer.threshold(global_treshold-70);
 		orangecutlayer.threshold(threshold);
 		redcutlayer.threshold(threshold-10);
 		orangelayer.threshold(threshold);
