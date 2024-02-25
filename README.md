@@ -26,29 +26,29 @@ The script takes 13 settings, written as a semicolon-separated text string (reci
 
 2. The threshold for global halation, from `1` to `255`. 
 
-2. The bloom (halo radius), from `1` to `100`.
+3. The bloom (halo radius), from `1` to `100`.
 
-3. The squaring (multiplication with itself) of the effect, from `1` to `3`.
+4. The squaring (multiplication with itself) of the effect, from `1` to `3`.
 
-4. How much to darken midtones as compensation for the global halation, from `1` to `100`.
+5. How much to darken midtones as compensation for the global halation, from `1` to `100`.
 
-5. The red value of the inner halation, from `0` to `255`.
+6. The red value of the inner halation, from `0` to `255`.
 
-6. The green value of the inner halation, from `0` to `255`.
+7. The green value of the inner halation, from `0` to `255`.
 
-7. The blue value of the inner halation, from `0` to `255`.
+8. The blue value of the inner halation, from `0` to `255`.
 
-8. The red value of the outer halation, from `0` to `255`.
+9. The red value of the outer halation, from `0` to `255`.
 
-9. The green value of the outer halation, from `0` to `255`.
+10. The green value of the outer halation, from `0` to `255`.
 
-10. The blue value of the outer halation, from `0` to `255`.
-
-11. The blue value of the global halation, from `0` to `255`.
+11. The blue value of the outer halation, from `0` to `255`.
 
 12. The blue value of the global halation, from `0` to `255`.
 
 13. The blue value of the global halation, from `0` to `255`.
+
+14. The blue value of the global halation, from `0` to `255`.
 
 
 ## Tips and tricks
@@ -57,4 +57,4 @@ The script takes 13 settings, written as a semicolon-separated text string (reci
 
 2. If you want to change the color values, darker colors results in a weaker effekt and brighter colors in a stronger effect. If you set the red, green and blue color to the same value you get a grayscale color, useful for monochrome halation.
 
-3. If you don't want any global halation, set #4, #11, #12 and #13 above to `0`.
+3. If you don't want any global halation, set #5, #12, #13 and #14 above to `0`.
