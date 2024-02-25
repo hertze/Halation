@@ -395,6 +395,13 @@ try {
 			multiply.merge();
 		}
 		
+		finalGroup = app.activeDocument.layerSets.add();
+		finalGroup.name = "Halation";
+		
+		globallayer.move(finalGroup, ElementPlacement.INSIDE);
+		darken.move(finalGroup, ElementPlacement.INSIDE);
+		redlayer.move(finalGroup, ElementPlacement.INSIDE);
+		
 		app.activeDocument.flatten();
 		
 		if (save == true ) { saveClose(); }
