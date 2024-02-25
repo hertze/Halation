@@ -18,7 +18,7 @@ This is a script plugin for Photoshop that simulates film-like halation.
 
 You run the script by running on of the supplied actions, or by making your own actions. If you expand an action and double-click on the settings you can edit the script recipe. 
 
-## Recipes
+## Making your own recipes
 
 The script takes 13 settings, written as a semicolon-separated text string (recipe):
 
@@ -53,4 +53,6 @@ The script takes 13 settings, written as a semicolon-separated text string (reci
 
 ## Tips and tricks
 
-If you want to remove the halation from some parts of the image (sunset skies, for instance), hit option + Z on a Mac, or ctrl + Z on a PC, to undo the last script step. You then get the halation as a separate layer, on which you can brush out parts with black color.
+1. If you want to remove the halation from some parts of the image (sunset skies, for instance), hit option + Z on a Mac, or ctrl + Z on a PC, to undo the last script step. You then get a folder with three layers, **local** for local halation, **darken midtones** that compensates for the increase in brightness that the global halation adds, and **global** with the global halation. With black selected you can simply brush out local and global halation you don't want in their respective layer.
+
+2. If you want to change the color values, darker colors results in a weaker effekt and brighter colors in a stronger effect. If you set the red, green and blue color to the same value you get a grayscale color, useful for monochrome halation.
