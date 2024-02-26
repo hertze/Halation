@@ -13,7 +13,7 @@
 
 var save = false;
 var threshold = 245;
-var global_treshold = 200;
+var global_threshold = 200;
 var bloom = 15;
 var effect_multiply = 1;
 var darken_local = 60;
@@ -185,6 +185,16 @@ function processRecipe(runtimesettings) {
 	}
 }
 
+function applyThreshold(layer, value) {
+	layer.threshold(value);
+}
+
+function duplicateLayer(layer, name) {
+	var duplicate = layer.duplicate();
+	duplicate.name = name;
+	return duplicate;
+}
+
 
 function colorOverlay(red, green, blue) {
 	
@@ -323,30 +333,19 @@ if (runtimesettings.recipe != "none") { processRecipe(runtimesettings); }
 try {	
 	if (executeScript == true) {
 		
-		var orangecutlayer = imagelayer.duplicate();
-		orangecutlayer.name = "cut";
+		var orangecutlayer = duplicateLayer(imagelayer, "cut");
+		var orangelayer = duplicateLayer(imagelayer, "orange");
+		var redcutlayer = duplicateLayer(imagelayer, "cut");
+		var redlayer = duplicateLayer(imagelayer, "local");
+		var globalcutlayer = duplicateLayer(imagelayer, "global cut");
+		var globallayer = duplicateLayer(imagelayer, "global");
 		
-		var orangelayer = imagelayer.duplicate();
-		orangelayer.name = "orange";
-		
-		var redcutlayer = imagelayer.duplicate();
-		redcutlayer.name = "cut";
-		
-		var redlayer = imagelayer.duplicate();
-		redlayer.name = "local";
-		
-		var globalcutlayer = imagelayer.duplicate();
-		globalcutlayer.name = "global cut";
-		
-		var globallayer = imagelayer.duplicate();
-		globallayer.name = "global";
-		
-		globalcutlayer.threshold(global_treshold);
-		globallayer.threshold(global_treshold-70);
-		orangecutlayer.threshold(threshold);
-		redcutlayer.threshold(threshold-10);
-		orangelayer.threshold(threshold);
-		redlayer.threshold(threshold-10);
+		applyThreshold(globalcutlayer, global_threshold);
+		applyThreshold(globallayer, global_threshold - 70);
+		applyThreshold(orangecutlayer, threshold);
+		applyThreshold(redcutlayer, threshold - 10);
+		applyThreshold(orangelayer, threshold);
+		applyThreshold(redlayer, threshold - 10);
 		
 		app.activeDocument.activeLayer = redlayer;
 		colorOverlay(red_outer, green_outer, blue_outer);
