@@ -161,12 +161,21 @@ function processRecipe(runtimesettings) {
 	thisRecipe = thisRecipe.replace(/;+$/, ""); // Removes trailing ;
 	
 	// Check recipe against syntax
-	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|([1-9][0-9])|100);([1-3]);([0-9]|([1-9][0-9])|100);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]));([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$', 'gm');
+	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]|(auto));([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]|(auto));([0-9]|([1-9][0-9])|100);([1-3]);([0-9]|([1-9][0-9])|100);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]));([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$', 'gm');
 	
 	if (regex.exec(thisRecipe) !== null) {
 		thisRecipe = thisRecipe.split(";"); // Splits into array at ;
-		threshold = parseInt(thisRecipe[0]);
-		global_threshold = parseInt(thisRecipe[1]);
+		if (thisRecipe[0] = "auto") {
+			threshold = "auto";
+		} else {
+			threshold = parseInt(thisRecipe[0]);
+		}
+		if (thisRecipe[0] = "auto") {
+			threshold = "auto";
+		} else {
+			global_threshold = parseInt(thisRecipe[1]);
+		}
+		
 		bloom = parseInt(thisRecipe[2]);
 		effect_multiply = parseInt(thisRecipe[3]);
 		darken_global = parseInt(thisRecipe[4]);
@@ -352,10 +361,12 @@ try {
 				threshold = brightestLevel - 10;
 			}
 			if (global_threshold == "auto") {
-				global_threshold = Math.round(brightestLevel - (55 / 255) * brightestLevel);
+				global_threshold = Math.round(brightestLevel - (65 / 255 * brightestLevel));
 			}
+		} else {
+			var brightestLevel = 1;
 		}
-		
+			
 		var orangecutlayer = duplicateLayer(imagelayer, "cut");
 		var orangelayer = duplicateLayer(imagelayer, "orange");
 		var redcutlayer = duplicateLayer(imagelayer, "cut");
@@ -364,7 +375,7 @@ try {
 		var globallayer = duplicateLayer(imagelayer, "global");
 		
 		applyThreshold(globalcutlayer, global_threshold);
-		applyThreshold(globallayer, global_threshold - 70);
+		applyThreshold(globallayer, global_threshold - Math.round(60/255*brightestLevel));
 		applyThreshold(orangecutlayer, threshold);
 		applyThreshold(redcutlayer, threshold - 10);
 		applyThreshold(orangelayer, threshold);
