@@ -282,11 +282,7 @@ var ratio = doc_height / doc_width;
 
 
 // Decide the shortest side
-if (ratio > 1) {
-	var negative_size = doc_width;
-} else {
-	var negative_size = doc_height;
-}
+var negative_size = ratio > 1 ? doc_width : doc_height;
 
 // Scale
 var doc_scale = negative_size.value / 3600;
