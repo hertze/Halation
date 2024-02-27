@@ -165,17 +165,8 @@ function processRecipe(runtimesettings) {
 	
 	if (regex.exec(thisRecipe) !== null) {
 		thisRecipe = thisRecipe.split(";"); // Splits into array at ;
-		if (thisRecipe[0] = "auto") {
-			threshold = "auto";
-		} else {
-			threshold = parseInt(thisRecipe[0]);
-		}
-		if (thisRecipe[0] = "auto") {
-			threshold = "auto";
-		} else {
-			global_threshold = parseInt(thisRecipe[1]);
-		}
-		
+		threshold = (thisRecipe[0] === "auto") ? "auto" : parseInt(thisRecipe[0]);
+		global_threshold = (thisRecipe[1] === "auto") ? "auto" : parseInt(thisRecipe[1]);
 		bloom = parseInt(thisRecipe[2]);
 		effect_multiply = parseInt(thisRecipe[3]);
 		darken_global = parseInt(thisRecipe[4]);
