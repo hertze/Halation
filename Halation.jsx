@@ -12,8 +12,8 @@
 // Settings ------------------------------------------------------------
 
 var save = false;
-var threshold = 245;
-var global_threshold = 200;
+var threshold = "auto";
+var global_threshold = "auto";
 var bloom = 15;
 var effect_multiply = 1;
 var darken_local = 60;
@@ -195,6 +195,28 @@ function duplicateLayer(layer, name) {
 	return duplicate;
 }
 
+function findBrightestLevel() {
+	// Access the active document
+	var doc = app.activeDocument;
+
+	// Get the histogram for the entire document
+	var histogram = doc.histogram;
+
+	// Initialize variables to hold the brightest level and its corresponding count
+	var brightestLevel = 0;
+	var maxCount = 0;
+
+	// Iterate over histogram to find the brightest level
+	for (var i = 0; i < histogram.length; i++) {
+		if (histogram[i] > maxCount) {
+			maxCount = histogram[i];
+			brightestLevel = i;
+		}
+	}
+
+	// Return the brightest level found
+	return brightestLevel;
+}
 
 function colorOverlay(red, green, blue) {
 	
@@ -325,6 +347,9 @@ imagelayer.name = "original"; // Names background layer
 //
 
 
+// Alert the brightest level found
+//alert("Brightest level in the image: " + brightestLevel);
+
 var executeScript = true;
 var isCancelled = false;
 var runtimesettings = getRecipe();
@@ -332,6 +357,19 @@ if (runtimesettings.recipe != "none") { processRecipe(runtimesettings); }
 
 try {	
 	if (executeScript == true) {
+		
+		if (threshold == "auto" || global_threshold == "auto") {
+			var brightestLevel = findBrightestLevel();
+		}
+		alert(brightestLevel);
+		if (threshold == "auto") {
+			threshold = brightestLevel - 10;
+		}
+		if (global_threshold == "auto") {
+			global_threshold = Math.round(brightestLevel - (55 / 255) * brightestLevel);
+			alert(global_threshold);
+		}
+		
 		
 		var orangecutlayer = duplicateLayer(imagelayer, "cut");
 		var orangelayer = duplicateLayer(imagelayer, "orange");
@@ -375,7 +413,6 @@ try {
 		darken.invert();
 		darken.blendMode = BlendMode.MULTIPLY;
 		darken.opacity = darken_global;
-		//darken.merge();
 		
 		orangecutlayer.invert();
 		orangecutlayer.blendMode = BlendMode.MULTIPLY;
