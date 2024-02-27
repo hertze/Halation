@@ -4,7 +4,7 @@ This is a script plugin for Photoshop that simulates film-like halation.
 
 ## How to install
 
-1. Download and unzip the software, if the latter isn’t done automatically. The resulting folder contains the main script **Halation.jsx** and two action sets, **Halation.atn** and **Halation-mono.atn**.
+1. Download and unzip the software, if the latter isn’t done automatically. The resulting folder contains the main script **Halation.jsx** and three action sets, **Halation.atn**, **Halation-local** and **Halation-mono.atn**.
 
 2. Quit Photoshop.
 
@@ -12,7 +12,7 @@ This is a script plugin for Photoshop that simulates film-like halation.
 
 4. Start Photoshop and make sure **Halation** shows up in the menu File/Automate.
 
-5. Install the Photoshop actions by double-clicking on the files **Halation.atn** and **Halation-mono.atn**, or by loading it in the Actions palette.
+5. Install the Photoshop actions by double-clicking on the files **Halation.atn**, **Halation-local** and **Halation-mono.atn**, or by loading it in the Actions palette.
 
 ## How to run
 
@@ -22,9 +22,9 @@ You run the script by running on of the supplied actions, or by making your own 
 
 The script takes 13 settings, written as a semicolon-separated text string (recipe):
 
-1. The highlight threshold for local halation, from `1` to `255`.
+1. The highlight threshold for local halation, from `1` to `255`, or `auto`.
 
-2. The threshold for global halation, from `1` to `255`. 
+2. The threshold for global halation, from `1` to `255`, or `auto`. 
 
 3. The bloom (halo radius), from `1` to `100`.
 
@@ -58,3 +58,5 @@ The script takes 13 settings, written as a semicolon-separated text string (reci
 2. If you want to change the color values, darker colors results in a weaker effekt and brighter colors in a stronger effect. If you set the red, green and blue color to the same value you get a grayscale color, useful for monochrome halation.
 
 3. If you don't want any global halation, set #5, #12, #13 and #14 above to `0`.
+
+4. Setting #1 and #2 to `auto` means the script will determine the brightest level in your image and calculate where to place local and global halation from there.
