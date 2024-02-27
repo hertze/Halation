@@ -207,56 +207,33 @@ function findBrightestLevelInHistogram() {
 
 
 function colorOverlay(red, green, blue) {
-	
-	var idset = stringIDToTypeID( "set" );
-		var desc239 = new ActionDescriptor();
-		var idnull = stringIDToTypeID( "null" );
-			var ref3 = new ActionReference();
-			var idproperty = stringIDToTypeID( "property" );
-			var idlayerEffects = stringIDToTypeID( "layerEffects" );
-			ref3.putProperty( idproperty, idlayerEffects );
-			var idlayer = stringIDToTypeID( "layer" );
-			var idordinal = stringIDToTypeID( "ordinal" );
-			var idtargetEnum = stringIDToTypeID( "targetEnum" );
-			ref3.putEnumerated( idlayer, idordinal, idtargetEnum );
-		desc239.putReference( idnull, ref3 );
-		var idto = stringIDToTypeID( "to" );
-			var desc240 = new ActionDescriptor();
-			var idscale = stringIDToTypeID( "scale" );
-			var idpercentUnit = stringIDToTypeID( "percentUnit" );
-			desc240.putUnitDouble( idscale, idpercentUnit, 416.666667 );
-			var idsolidFill = stringIDToTypeID( "solidFill" );
-				var desc241 = new ActionDescriptor();
-				var idenabled = stringIDToTypeID( "enabled" );
-				desc241.putBoolean( idenabled, true );
-				var idpresent = stringIDToTypeID( "present" );
-				desc241.putBoolean( idpresent, true );
-				var idshowInDialog = stringIDToTypeID( "showInDialog" );
-				desc241.putBoolean( idshowInDialog, true );
-				var idmode = stringIDToTypeID( "mode" );
-				var idblendMode = stringIDToTypeID( "blendMode" );
-				var idmultiply = stringIDToTypeID( "multiply" );
-				desc241.putEnumerated( idmode, idblendMode, idmultiply );
-				var idcolor = stringIDToTypeID( "color" );
-					var desc242 = new ActionDescriptor();
-					var idred = stringIDToTypeID( "red" );
-					desc242.putDouble( idred, red );
-					var idgrain = stringIDToTypeID( "grain" );
-					desc242.putDouble( idgrain, green );
-					var idblue = stringIDToTypeID( "blue" );
-					desc242.putDouble( idblue, blue );
-				var idRGBColor = stringIDToTypeID( "RGBColor" );
-				desc241.putObject( idcolor, idRGBColor, desc242 );
-				var idopacity = stringIDToTypeID( "opacity" );
-				var idpercentUnit = stringIDToTypeID( "percentUnit" );
-				desc241.putUnitDouble( idopacity, idpercentUnit, 100.000000 );
-			var idsolidFill = stringIDToTypeID( "solidFill" );
-			desc240.putObject( idsolidFill, idsolidFill, desc241 );
-		var idlayerEffects = stringIDToTypeID( "layerEffects" );
-		desc239.putObject( idto, idlayerEffects, desc240 );
-	executeAction( idset, desc239, DialogModes.NO );
-	
+	var desc = new ActionDescriptor();
+	var ref = new ActionReference();
+	ref.putProperty(stringIDToTypeID("property"), stringIDToTypeID("layerEffects"));
+	ref.putEnumerated(stringIDToTypeID("layer"), stringIDToTypeID("ordinal"), stringIDToTypeID("targetEnum"));
+	desc.putReference(stringIDToTypeID("null"), ref);
+
+	var desc2 = new ActionDescriptor();
+	var desc3 = new ActionDescriptor();
+	desc3.putBoolean(stringIDToTypeID("enabled"), true);
+	desc3.putBoolean(stringIDToTypeID("present"), true);
+	desc3.putBoolean(stringIDToTypeID("showInDialog"), true);
+	desc3.putEnumerated(stringIDToTypeID("mode"), stringIDToTypeID("blendMode"), stringIDToTypeID("multiply"));
+
+	var desc4 = new ActionDescriptor();
+	desc4.putDouble(stringIDToTypeID("red"), red);
+	desc4.putDouble(stringIDToTypeID("grain"), green);
+	desc4.putDouble(stringIDToTypeID("blue"), blue);
+	desc3.putObject(stringIDToTypeID("color"), stringIDToTypeID("RGBColor"), desc4);
+
+	desc3.putUnitDouble(stringIDToTypeID("opacity"), stringIDToTypeID("percentUnit"), 100.000000);
+	desc2.putObject(stringIDToTypeID("solidFill"), stringIDToTypeID("solidFill"), desc3);
+	desc2.putUnitDouble(stringIDToTypeID("scale"), stringIDToTypeID("percentUnit"), 416.666667);
+	desc.putObject(stringIDToTypeID("to"), stringIDToTypeID("layerEffects"), desc2);
+
+	executeAction(stringIDToTypeID("set"), desc, DialogModes.NO);
 }
+
 
 function rasterizeLayer() {
 	var desc = new ActionDescriptor();
