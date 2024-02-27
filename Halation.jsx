@@ -195,21 +195,13 @@ function duplicateLayer(layer, name) {
 	return duplicate;
 }
 
-// Function to find the brightest level in the histogram of the active document
+
 function findBrightestLevelInHistogram() {
-	// Access the active document
-	var doc = app.activeDocument;
-
-	// Get the histogram for the entire document
-	var histogram = doc.histogram;
-
-	// Find the first non-zero bin from the right side (brightest level)
+	var histogram = app.activeDocument.histogram;
 	var brightestLevel = histogram.length - 1;
 	while (histogram[brightestLevel] === 0 && brightestLevel >= 0) {
 		brightestLevel--;
 	}
-
-	// Return the brightest level found
 	return brightestLevel;
 }
 
@@ -356,16 +348,13 @@ try {
 		
 		if (threshold == "auto" || global_threshold == "auto") {
 			var brightestLevel = findBrightestLevelInHistogram();
+			if (threshold == "auto") {
+				threshold = brightestLevel - 10;
+			}
+			if (global_threshold == "auto") {
+				global_threshold = Math.round(brightestLevel - (55 / 255) * brightestLevel);
+			}
 		}
-		alert(brightestLevel);
-		if (threshold == "auto") {
-			threshold = brightestLevel - 10;
-		}
-		if (global_threshold == "auto") {
-			global_threshold = Math.round(brightestLevel - (55 / 255) * brightestLevel);
-			alert(global_threshold);
-		}
-		
 		
 		var orangecutlayer = duplicateLayer(imagelayer, "cut");
 		var orangelayer = duplicateLayer(imagelayer, "orange");
