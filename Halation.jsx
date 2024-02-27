@@ -259,22 +259,12 @@ function colorOverlay(red, green, blue) {
 }
 
 function rasterizeLayer() {
-	
-	var idrasterizeLayer = stringIDToTypeID( "rasterizeLayer" );
-		var desc243 = new ActionDescriptor();
-		var idnull = stringIDToTypeID( "null" );
-			var ref3 = new ActionReference();
-			var idlayer = stringIDToTypeID( "layer" );
-			var idordinal = stringIDToTypeID( "ordinal" );
-			var idtargetEnum = stringIDToTypeID( "targetEnum" );
-			ref3.putEnumerated( idlayer, idordinal, idtargetEnum );
-		desc243.putReference( idnull, ref3 );
-		var idwhat = stringIDToTypeID( "what" );
-		var idrasterizeItem = stringIDToTypeID( "rasterizeItem" );
-		var idlayerStyle = stringIDToTypeID( "layerStyle" );
-		desc243.putEnumerated( idwhat, idrasterizeItem, idlayerStyle );
-	executeAction( idrasterizeLayer, desc243, DialogModes.NO );
-	
+	var desc = new ActionDescriptor();
+	var ref = new ActionReference();
+	ref.putEnumerated(stringIDToTypeID("layer"), stringIDToTypeID("ordinal"), stringIDToTypeID("targetEnum"));
+	desc.putReference(stringIDToTypeID("null"), ref);
+	desc.putEnumerated(stringIDToTypeID("what"), stringIDToTypeID("rasterizeItem"), stringIDToTypeID("layerStyle"));
+	executeAction(stringIDToTypeID("rasterizeLayer"), desc, DialogModes.NO);
 }
 
 
@@ -346,12 +336,12 @@ if (runtimesettings.recipe != "none") { processRecipe(runtimesettings); }
 try {	
 	if (executeScript == true) {
 		
-		if (threshold == "auto" || global_threshold == "auto") {
+		if (threshold === "auto" || global_threshold === "auto") {
 			var brightestLevel = findBrightestLevelInHistogram();
-			if (threshold == "auto") {
+			if (threshold === "auto") {
 				threshold = brightestLevel - 10;
 			}
-			if (global_threshold == "auto") {
+			if (global_threshold === "auto") {
 				global_threshold = Math.round(brightestLevel - (65 / 255 * brightestLevel));
 			}
 		} else {
