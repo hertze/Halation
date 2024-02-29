@@ -312,7 +312,7 @@ try {
 		if (threshold === "auto" || global_threshold === "auto") {
 			var brightestLevel = findBrightestLevelInHistogram();
 			if (threshold === "auto") {
-				threshold = brightestLevel - 10;
+				threshold = brightestLevel - 5;
 			}
 			if (global_threshold === "auto") {
 				global_threshold = Math.round(brightestLevel - (65 / 255 * brightestLevel));
@@ -331,9 +331,9 @@ try {
 		applyThreshold(globalcutlayer, global_threshold);
 		applyThreshold(globallayer, global_threshold - Math.round(60/255*brightestLevel));
 		applyThreshold(orangecutlayer, threshold);
-		applyThreshold(redcutlayer, threshold - 10);
+		applyThreshold(redcutlayer, threshold - 8);
 		applyThreshold(orangelayer, threshold);
-		applyThreshold(redlayer, threshold - 10);
+		applyThreshold(redlayer, threshold - 8);
 		
 		app.activeDocument.activeLayer = redlayer;
 		colorOverlay(red_outer, green_outer, blue_outer);
