@@ -254,6 +254,8 @@ function selectSky() {
 	
 		app.activeDocument.selection.contract(UnitValue(Math.round(doc_scale*50), "px"));
 		app.activeDocument.selection.feather(Math.round(doc_scale*10));
+		
+		return "success";
 	} catch (f) {}
 	
 }
@@ -398,12 +400,13 @@ try {
 		// Make original layer active
 		app.activeDocument.activeLayer = imagelayer;
 		// Select everything but the sky
-		selectSky();
+		var removeSky = selectSky();
 		// Make redlayer active and fill selection with black
-		app.activeDocument.activeLayer = redlayer;
-		app.activeDocument.selection.fill(myColor_black);
-		app.activeDocument.selection.deselect();
-		
+		if (removeSky == "success") {
+			app.activeDocument.activeLayer = redlayer;
+			app.activeDocument.selection.fill(myColor_black);
+			app.activeDocument.selection.deselect();
+		}
 		redlayer.blendMode = BlendMode.SCREEN;
 		
 		for(var i = 0; i < effect_multiply - 1; i++) {
