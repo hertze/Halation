@@ -245,6 +245,17 @@ function rasterizeLayer() {
 }
 
 
+function selectSky() {
+	
+	var idselectSky = stringIDToTypeID("selectSky");
+	var desc = new ActionDescriptor();
+	executeAction(idselectSky, desc, DialogModes.NO);
+
+	app.activeDocument.selection.contract(UnitValue(Math.round(doc_scale*50), "px"));
+	app.activeDocument.selection.feather(Math.round(doc_scale*10));
+	
+}
+
 function saveClose() {
 	var file_ending = app.activeDocument.name.split('.').pop().toLowerCase();
 	var fPath = app.activeDocument.path;
@@ -292,6 +303,11 @@ app.activeDocument.activeLayer.isBackgroundLayer = false; // Unlocks background 
 var imagelayer = app.activeDocument.activeLayer;
 imagelayer.name = "original"; // Names background layer
 
+var myColor_black = new SolidColor(); 
+myColor_black.rgb.red = 0; 
+myColor_black.rgb.green = 0;  
+myColor_black.rgb.blue = 0;
+
 
 //
 // MAIN ROUTINE
@@ -312,7 +328,7 @@ try {
 		if (threshold === "auto" || global_threshold === "auto") {
 			var brightestLevel = findBrightestLevelInHistogram();
 			if (threshold === "auto") {
-				threshold = brightestLevel - 5;
+				threshold = brightestLevel - 8;
 			}
 			if (global_threshold === "auto") {
 				global_threshold = Math.round(brightestLevel - (65 / 255 * brightestLevel));
@@ -320,11 +336,11 @@ try {
 		} else {
 			var brightestLevel = 1;
 		}
-			
+		
 		var orangecutlayer = duplicateLayer(imagelayer, "cut");
 		var orangelayer = duplicateLayer(imagelayer, "orange");
 		var redcutlayer = duplicateLayer(imagelayer, "cut");
-		var redlayer = duplicateLayer(imagelayer, "local");
+		var redlayer = duplicateLayer(imagelayer, "red");
 		var globalcutlayer = duplicateLayer(imagelayer, "global cut");
 		var globallayer = duplicateLayer(imagelayer, "global");
 		
@@ -344,7 +360,9 @@ try {
 		rasterizeLayer();
 		
 		redlayer.applyGaussianBlur(Math.round(doc_scale*bloom));
+		redcutlayer.applyGaussianBlur(Math.round(doc_scale*2));
 		orangelayer.applyGaussianBlur(Math.round(doc_scale*bloom));
+		orangecutlayer.applyGaussianBlur(Math.round(doc_scale));
 		
 		globalcutlayer.blendMode = BlendMode.DIFFERENCE;
 		globalcutlayer.merge();
@@ -373,7 +391,17 @@ try {
 		redcutlayer.merge();
 		
 		orangelayer.blendMode = BlendMode.SCREEN;
-		orangelayer.merge();	
+		orangelayer.merge();
+
+		// Make original layer active
+		app.activeDocument.activeLayer = imagelayer;
+		// Select everything but the sky
+		selectSky();
+		// Make redlayer active and fill selection with black
+		app.activeDocument.activeLayer = redlayer;
+		app.activeDocument.selection.fill(myColor_black);
+		app.activeDocument.selection.deselect();
+		
 		redlayer.blendMode = BlendMode.SCREEN;
 		
 		for(var i = 0; i < effect_multiply - 1; i++) {
