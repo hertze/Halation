@@ -340,7 +340,7 @@ try {
 		var orangecutlayer = duplicateLayer(imagelayer, "cut");
 		var orangelayer = duplicateLayer(imagelayer, "orange");
 		var redcutlayer = duplicateLayer(imagelayer, "cut");
-		var redlayer = duplicateLayer(imagelayer, "red");
+		var redlayer = duplicateLayer(imagelayer, "local");
 		var globalcutlayer = duplicateLayer(imagelayer, "global cut");
 		var globallayer = duplicateLayer(imagelayer, "global");
 		
