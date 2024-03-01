@@ -247,12 +247,14 @@ function rasterizeLayer() {
 
 function selectSky() {
 	
-	var idselectSky = stringIDToTypeID("selectSky");
-	var desc = new ActionDescriptor();
-	executeAction(idselectSky, desc, DialogModes.NO);
-
-	app.activeDocument.selection.contract(UnitValue(Math.round(doc_scale*50), "px"));
-	app.activeDocument.selection.feather(Math.round(doc_scale*10));
+	try {
+		var idselectSky = stringIDToTypeID("selectSky");
+		var desc = new ActionDescriptor();
+		executeAction(idselectSky, desc, DialogModes.NO);
+	
+		app.activeDocument.selection.contract(UnitValue(Math.round(doc_scale*50), "px"));
+		app.activeDocument.selection.feather(Math.round(doc_scale*10));
+	} catch (f) {}
 	
 }
 
