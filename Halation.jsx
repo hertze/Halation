@@ -13,6 +13,7 @@
 
 var save = false;
 var threshold = "auto";
+var min_threshold = 235;
 var global_threshold = "auto";
 var bloom = 15;
 var effect_multiply = 1;
@@ -330,7 +331,7 @@ try {
 	if (executeScript == true) {
 		
 		if (threshold === "auto" || global_threshold === "auto") {
-			var brightestLevel = findBrightestLevelInHistogram();
+			var brightestLevel = Math.max(findBrightestLevelInHistogram(), min_threshold);
 			if (threshold === "auto") {
 				threshold = brightestLevel - 8;
 			}
