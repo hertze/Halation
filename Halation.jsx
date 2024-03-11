@@ -162,24 +162,25 @@ function processRecipe(runtimesettings) {
 	thisRecipe = thisRecipe.replace(/;+$/, ""); // Removes trailing ;
 	
 	// Check recipe against syntax
-	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]|(auto));([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]|(auto));([0-9]|([1-9][0-9])|100);([1-3]);([0-9]|([1-9][0-9])|100);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]));([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$', 'gm');
+	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]|(auto));([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]|(auto));([0-9]|([1-9][0-9])|100);([1-3]);([0-9]|([1-9][0-9])|100);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]));([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$', 'gm');
 	
 	if (regex.exec(thisRecipe) !== null) {
 		thisRecipe = thisRecipe.split(";"); // Splits into array at ;
 		threshold = (thisRecipe[0] === "auto") ? "auto" : parseInt(thisRecipe[0]);
-		global_threshold = (thisRecipe[1] === "auto") ? "auto" : parseInt(thisRecipe[1]);
-		bloom = parseInt(thisRecipe[2]);
-		effect_multiply = parseInt(thisRecipe[3]);
-		darken_global = parseInt(thisRecipe[4]);
-		red_inner = parseInt(thisRecipe[5]);
-		green_inner = parseInt(thisRecipe[6]);
-		blue_inner = parseInt(thisRecipe[7]);
-		red_outer = parseInt(thisRecipe[8]);
-		green_outer = parseInt(thisRecipe[9]);
-		blue_outer = parseInt(thisRecipe[10]);
-		red_global = parseInt(thisRecipe[11]);
-		green_global = parseInt(thisRecipe[12]);
-		blue_global = parseInt(thisRecipe[13]);
+		min_threshold = parseInt(thisRecipe[1]);
+		global_threshold = (thisRecipe[2] === "auto") ? "auto" : parseInt(thisRecipe[2]);
+		bloom = parseInt(thisRecipe[3]);
+		effect_multiply = parseInt(thisRecipe[4]);
+		darken_global = parseInt(thisRecipe[5]);
+		red_inner = parseInt(thisRecipe[6]);
+		green_inner = parseInt(thisRecipe[7]);
+		blue_inner = parseInt(thisRecipe[8]);
+		red_outer = parseInt(thisRecipe[9]);
+		green_outer = parseInt(thisRecipe[10]);
+		blue_outer = parseInt(thisRecipe[11]);
+		red_global = parseInt(thisRecipe[12]);
+		green_global = parseInt(thisRecipe[13]);
+		blue_global = parseInt(thisRecipe[14]);
 	} else {
 		executeScript = false;
 		alert("Sorry, but that recipe is faulty! Please check it's syntax and it's settings and then try again.");
@@ -318,10 +319,6 @@ myColor_black.rgb.blue = 0;
 // MAIN ROUTINE
 //
 
-
-// Alert the brightest level found
-//alert("Brightest level in the image: " + brightestLevel);
-
 var executeScript = true;
 var isCancelled = false;
 var runtimesettings = getRecipe();
@@ -331,6 +328,7 @@ try {
 	if (executeScript == true) {
 		
 		if (threshold === "auto" || global_threshold === "auto") {
+			// If the brightest level is lower than min_threshold, brightestLevel is set to min_threshold.
 			var brightestLevel = Math.max(findBrightestLevelInHistogram(), min_threshold);
 			if (threshold === "auto") {
 				threshold = brightestLevel - 8;
@@ -339,6 +337,7 @@ try {
 				global_threshold = Math.round(brightestLevel - (65 / 255 * brightestLevel));
 			}
 		} else {
+			// Setting it to 1 makes it having no effect in calculating global_threshold below.
 			var brightestLevel = 1;
 		}
 		
