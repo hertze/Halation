@@ -342,6 +342,7 @@ try {
 		}
 		
 		var orangecutlayer = duplicateLayer(imagelayer, "cut");
+		var orangeredlayer = duplicateLayer(imagelayer, "orangered");
 		var orangelayer = duplicateLayer(imagelayer, "orange");
 		var redcutlayer = duplicateLayer(imagelayer, "cut");
 		var redlayer = duplicateLayer(imagelayer, "local /" + " " + brightestLevel);
@@ -353,6 +354,7 @@ try {
 		applyThreshold(orangecutlayer, threshold);
 		applyThreshold(redcutlayer, threshold - 8);
 		applyThreshold(orangelayer, threshold);
+		applyThreshold(orangeredlayer, threshold);
 		applyThreshold(redlayer, threshold - 8);
 		
 		app.activeDocument.activeLayer = redlayer;
@@ -362,10 +364,15 @@ try {
 		app.activeDocument.activeLayer = orangelayer;
 		colorOverlay(red_inner, green_inner, blue_inner);
 		rasterizeLayer();
+
+		app.activeDocument.activeLayer = orangeredlayer;
+		colorOverlay(red_outer, green_outer, blue_outer);
+		rasterizeLayer();
 		
 		redlayer.applyGaussianBlur(Math.round(doc_scale*bloom));
 		redcutlayer.applyGaussianBlur(Math.round(doc_scale*2));
-		orangelayer.applyGaussianBlur(Math.round(doc_scale*bloom));
+		orangelayer.applyGaussianBlur(Math.round(doc_scale*bloom*0.67));
+		orangeredlayer.applyGaussianBlur(Math.round(doc_scale*bloom));
 		orangecutlayer.applyGaussianBlur(Math.round(doc_scale));
 		
 		globalcutlayer.blendMode = BlendMode.DIFFERENCE;
@@ -386,6 +393,10 @@ try {
 		darken.blendMode = BlendMode.MULTIPLY;
 		darken.opacity = darken_global;
 		
+		orangeredlayer.blendMode = BlendMode.SCREEN;
+		orangeredlayer.merge();
+
+
 		orangecutlayer.invert();
 		orangecutlayer.blendMode = BlendMode.MULTIPLY;
 		orangecutlayer.merge();
