@@ -396,7 +396,6 @@ try {
 		orangeredlayer.blendMode = BlendMode.SCREEN;
 		orangeredlayer.merge();
 
-
 		orangecutlayer.invert();
 		orangecutlayer.blendMode = BlendMode.MULTIPLY;
 		orangecutlayer.merge();
