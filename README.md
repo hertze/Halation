@@ -30,7 +30,7 @@ The script takes 13 settings, written as a semicolon-separated text string (reci
 
 4. The bloom (halo radius), from `1` to `100`.
 
-5. The squaring (multiplication with itself) of the effect, from `1` to `3`.
+5. How much the effect should be boosted, from `0`to `170`.
 
 6. How much to darken midtones as compensation for the global halation, from `1` to `100`.
 

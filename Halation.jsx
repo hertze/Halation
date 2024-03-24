@@ -1,6 +1,6 @@
 // H A L A T I O N
 //
-// Version 1.3.1
+// Version 1.4.0
 //
 // by Joakim Hertze (www.hertze.se)
 //
@@ -16,7 +16,7 @@ var threshold = "auto";
 var min_threshold = 235;
 var global_threshold = "auto";
 var bloom = 15;
-var effect_multiply = 1;
+var boost = 40;
 var darken_local = 60;
 var darken_global = 40;
 var red_inner = 204;
@@ -162,7 +162,7 @@ function processRecipe(runtimesettings) {
 	thisRecipe = thisRecipe.replace(/;+$/, ""); // Removes trailing ;
 	
 	// Check recipe against syntax
-	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]|(auto));([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]|(auto));([0-9]|([1-9][0-9])|100);([1-3]);([0-9]|([1-9][0-9])|100);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]));([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$', 'gm');
+	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]|(auto));([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]|(auto));([0-9]|([1-9][0-9])|100);(170|1[0-6][0-9]|[1-9][0-9]?|0);([0-9]|([1-9][0-9])|100);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]));([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$', 'gm');
 	
 	if (regex.exec(thisRecipe) !== null) {
 		thisRecipe = thisRecipe.split(";"); // Splits into array at ;
@@ -170,7 +170,7 @@ function processRecipe(runtimesettings) {
 		min_threshold = parseInt(thisRecipe[1]);
 		global_threshold = (thisRecipe[2] === "auto") ? "auto" : parseInt(thisRecipe[2]);
 		bloom = parseInt(thisRecipe[3]);
-		effect_multiply = parseInt(thisRecipe[4]);
+		boost = parseInt(thisRecipe[4]);
 		darken_global = parseInt(thisRecipe[5]);
 		red_inner = parseInt(thisRecipe[6]);
 		green_inner = parseInt(thisRecipe[7]);
@@ -418,11 +418,9 @@ try {
 			app.activeDocument.selection.deselect();
 		}
 		redlayer.blendMode = BlendMode.SCREEN;
-		
-		for(var i = 0; i < effect_multiply - 1; i++) {
-			var multiply = redlayer.duplicate();
-			multiply.merge();
-		}
+
+		// Boost the effect with a curve
+		redlayer.adjustCurves([[0, 0], [40, Math.round(40+boost/5)], [85, 85+boost], [255, 255]]);
 		
 		finalGroup = app.activeDocument.layerSets.add();
 		finalGroup.name = "Halation";
