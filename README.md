@@ -46,9 +46,9 @@ The script takes 13 settings, written as a semicolon-separated text string (reci
 
 12. The blue value of the outer halation, from `0` to `255`.
 
-13. The blue value of the global halation, from `0` to `255`.
+13. The red value of the global halation, from `0` to `255`.
 
-14. The blue value of the global halation, from `0` to `255`.
+14. The green value of the global halation, from `0` to `255`.
 
 15. The blue value of the global halation, from `0` to `255`.
 
