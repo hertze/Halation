@@ -294,7 +294,7 @@ function selectLowContrastAreas(imagelayer, highPassRadius, threshold) {
     // Load the alpha channel into the selection
     app.activeDocument.selection.load(alphaChannel);
 
-	app.activeDocument.selection.contract(UnitValue(doc_scale*20, "px"));
+	app.activeDocument.selection.contract(UnitValue(Math.round(doc_scale*bloom), "px"));
 
 	// Delete the low contrast layer
 	lowContrastLayer.remove();
