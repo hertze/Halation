@@ -1,6 +1,6 @@
 // H A L A T I O N
 //
-// Version 1.4.0
+// Version 1.5.0
 //
 // by Joakim Hertze (www.hertze.se)
 //
@@ -247,21 +247,6 @@ function rasterizeLayer() {
 }
 
 
-function selectSky() {
-	
-	try {
-		var idselectSky = stringIDToTypeID("selectSky");
-		var desc = new ActionDescriptor();
-		executeAction(idselectSky, desc, DialogModes.NO);
-	
-		app.activeDocument.selection.contract(UnitValue(Math.round(doc_scale*50), "px"));
-		app.activeDocument.selection.feather(Math.round(doc_scale*10));
-		
-		return "success";
-	} catch (f) {}
-	
-}
-
 function saveClose() {
 	var file_ending = app.activeDocument.name.split('.').pop().toLowerCase();
 	var fPath = app.activeDocument.path;
@@ -285,6 +270,36 @@ function saveClose() {
 		app.activeDocument.saveAs(jpgFile, jpgSaveOptions, false, Extension.LOWERCASE);
 	}
 	app.activeDocument.close();
+}
+
+function selectLowContrastAreas(imagelayer, highPassRadius, threshold) {
+
+    var lowContrastLayer = imagelayer.duplicate();
+    lowContrastLayer.name = "Low Contrast Areas";
+    lowContrastLayer.invert();
+    applyThreshold(lowContrastLayer, threshold);
+
+	lowContrastLayer.applyGaussianBlur(doc_scale*20);
+
+    // Create an alpha channel from the low contrast layer
+    var alphaChannel = app.activeDocument.channels.add();
+    alphaChannel.kind = ChannelType.SELECTEDAREA;
+    alphaChannel.name = "Low Contrast Areas";
+
+    // Copy the low contrast layer to the alpha channel
+    lowContrastLayer.copy();
+    app.activeDocument.activeChannels = [alphaChannel];
+    app.activeDocument.paste();
+
+    // Load the alpha channel into the selection
+    app.activeDocument.selection.load(alphaChannel);
+
+	app.activeDocument.selection.contract(UnitValue(doc_scale*20, "px"));
+
+	// Delete the low contrast layer
+	lowContrastLayer.remove();
+
+    return lowContrastLayer;
 }
 
 
@@ -409,14 +424,13 @@ try {
 
 		// Make original layer active
 		app.activeDocument.activeLayer = imagelayer;
-		// Select everything but the sky
-		var removeSky = selectSky();
-		// Make redlayer active and fill selection with black
-		if (removeSky == "success") {
-			app.activeDocument.activeLayer = redlayer;
-			app.activeDocument.selection.fill(myColor_black);
-			app.activeDocument.selection.deselect();
-		}
+
+		// Remove low contrast areas. Experiment with different trheshold values. The lower, the more halation.
+		var lowContrastLayer = selectLowContrastAreas(imagelayer, doc_scale*30, 50);
+		app.activeDocument.activeLayer = redlayer;
+		app.activeDocument.selection.fill(myColor_black);
+		app.activeDocument.selection.deselect();
+
 		redlayer.blendMode = BlendMode.SCREEN;
 
 		// Boost the effect with a curve
