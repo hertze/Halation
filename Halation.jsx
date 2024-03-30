@@ -287,6 +287,35 @@ function saveClose() {
 	app.activeDocument.close();
 }
 
+function fillLowContrastAreasWithBlack(imagelayer, highPassRadius) {
+    // Duplicate the layer
+    var lowContrastLayer = imagelayer.duplicate();
+    lowContrastLayer.name = "Low Contrast Areas";
+
+    // Apply a High Pass filter to isolate high contrast areas
+    lowContrastLayer.applyHighPass(highPassRadius);
+
+    // Invert the result to get low contrast areas
+    lowContrastLayer.invert();
+
+    // Calculate the average brightness of the image
+    var histogram = app.activeDocument.histogram;
+    var totalBrightness = 0;
+    var totalPixels = 0;
+    for (var i = 0; i < histogram.length; i++) {
+        totalBrightness += i * histogram[i];
+        totalPixels += histogram[i];
+    }
+    var averageBrightness = totalBrightness / totalPixels;
+
+    // Set the threshold to a value slightly higher than the average brightness
+    var threshold = averageBrightness + 20; // Adjust the offset to control the level of contrast considered "low"
+
+    // Apply the threshold to the layer
+    applyThreshold(lowContrastLayer, threshold);
+
+    return lowContrastLayer;
+}
 
 // Initial properties, settings and calculations
 
@@ -340,6 +369,13 @@ try {
 			// Setting it to 1 makes it having no effect in calculating global_threshold below.
 			var brightestLevel = 1;
 		}
+
+
+
+		var lowContrastLayer = fillLowContrastAreasWithBlack(imagelayer, doc_scale*50);
+
+		throw new Error("Stop execution");	
+
 		
 		var orangecutlayer = duplicateLayer(imagelayer, "cut");
 		var orangeredlayer = duplicateLayer(imagelayer, "orangered");
@@ -410,13 +446,23 @@ try {
 		// Make original layer active
 		app.activeDocument.activeLayer = imagelayer;
 		// Select everything but the sky
-		var removeSky = selectSky();
+		//var removeSky = selectSky();
 		// Make redlayer active and fill selection with black
-		if (removeSky == "success") {
-			app.activeDocument.activeLayer = redlayer;
-			app.activeDocument.selection.fill(myColor_black);
-			app.activeDocument.selection.deselect();
-		}
+		//if (removeSky == "success") {
+		//	app.activeDocument.activeLayer = redlayer;
+		//	app.activeDocument.selection.fill(myColor_black);
+		//	app.activeDocument.selection.deselect();
+		//}//
+
+
+		
+
+		// Blend the low contrast layer with the redlayer
+		lowContrastLayer.move(redlayer, ElementPlacement.PLACEBEFORE);
+		lowContrastLayer.blendMode = BlendMode.SCREEN; // or any other bl
+
+		throw new Error("Stop execution");	
+
 		redlayer.blendMode = BlendMode.SCREEN;
 
 		// Boost the effect with a curve
