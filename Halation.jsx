@@ -287,35 +287,36 @@ function saveClose() {
 	app.activeDocument.close();
 }
 
-function fillLowContrastAreasWithBlack(imagelayer, highPassRadius) {
-    // Duplicate the layer
+function selectLowContrastAreas(imagelayer, highPassRadius, threshold) {
+
     var lowContrastLayer = imagelayer.duplicate();
     lowContrastLayer.name = "Low Contrast Areas";
-
-    // Apply a High Pass filter to isolate high contrast areas
-    lowContrastLayer.applyHighPass(highPassRadius);
-
-    // Invert the result to get low contrast areas
     lowContrastLayer.invert();
-
-    // Calculate the average brightness of the image
-    var histogram = app.activeDocument.histogram;
-    var totalBrightness = 0;
-    var totalPixels = 0;
-    for (var i = 0; i < histogram.length; i++) {
-        totalBrightness += i * histogram[i];
-        totalPixels += histogram[i];
-    }
-    var averageBrightness = totalBrightness / totalPixels;
-
-    // Set the threshold to a value slightly higher than the average brightness
-    var threshold = averageBrightness + 20; // Adjust the offset to control the level of contrast considered "low"
-
-    // Apply the threshold to the layer
     applyThreshold(lowContrastLayer, threshold);
+
+	lowContrastLayer.applyGaussianBlur(doc_scale*10);
+
+    // Create an alpha channel from the low contrast layer
+    var alphaChannel = app.activeDocument.channels.add();
+    alphaChannel.kind = ChannelType.SELECTEDAREA;
+    alphaChannel.name = "Low Contrast Areas";
+
+    // Copy the low contrast layer to the alpha channel
+    lowContrastLayer.copy();
+    app.activeDocument.activeChannels = [alphaChannel];
+    app.activeDocument.paste();
+
+    // Load the alpha channel into the selection
+    app.activeDocument.selection.load(alphaChannel);
+
+	app.activeDocument.selection.contract(UnitValue(doc_scale*50, "px"));
+
+	// Delete the low contrast layer
+	lowContrastLayer.remove();
 
     return lowContrastLayer;
 }
+
 
 // Initial properties, settings and calculations
 
@@ -369,13 +370,6 @@ try {
 			// Setting it to 1 makes it having no effect in calculating global_threshold below.
 			var brightestLevel = 1;
 		}
-
-
-
-		var lowContrastLayer = fillLowContrastAreasWithBlack(imagelayer, doc_scale*50);
-
-		throw new Error("Stop execution");	
-
 		
 		var orangecutlayer = duplicateLayer(imagelayer, "cut");
 		var orangeredlayer = duplicateLayer(imagelayer, "orangered");
@@ -454,14 +448,11 @@ try {
 		//	app.activeDocument.selection.deselect();
 		//}//
 
-
-		
-
-		// Blend the low contrast layer with the redlayer
-		lowContrastLayer.move(redlayer, ElementPlacement.PLACEBEFORE);
-		lowContrastLayer.blendMode = BlendMode.SCREEN; // or any other bl
-
-		throw new Error("Stop execution");	
+		// remove low contrast areas
+		var lowContrastLayer = selectLowContrastAreas(imagelayer, doc_scale*30, 128);
+		app.activeDocument.activeLayer = redlayer;
+		app.activeDocument.selection.fill(myColor_black);
+		app.activeDocument.selection.deselect();
 
 		redlayer.blendMode = BlendMode.SCREEN;
 
