@@ -247,21 +247,6 @@ function rasterizeLayer() {
 }
 
 
-function selectSky() {
-	
-	try {
-		var idselectSky = stringIDToTypeID("selectSky");
-		var desc = new ActionDescriptor();
-		executeAction(idselectSky, desc, DialogModes.NO);
-	
-		app.activeDocument.selection.contract(UnitValue(Math.round(doc_scale*50), "px"));
-		app.activeDocument.selection.feather(Math.round(doc_scale*10));
-		
-		return "success";
-	} catch (f) {}
-	
-}
-
 function saveClose() {
 	var file_ending = app.activeDocument.name.split('.').pop().toLowerCase();
 	var fPath = app.activeDocument.path;
@@ -309,7 +294,7 @@ function selectLowContrastAreas(imagelayer, highPassRadius, threshold) {
     // Load the alpha channel into the selection
     app.activeDocument.selection.load(alphaChannel);
 
-	app.activeDocument.selection.contract(UnitValue(doc_scale*50, "px"));
+	app.activeDocument.selection.contract(UnitValue(doc_scale*20, "px"));
 
 	// Delete the low contrast layer
 	lowContrastLayer.remove();
@@ -439,17 +424,9 @@ try {
 
 		// Make original layer active
 		app.activeDocument.activeLayer = imagelayer;
-		// Select everything but the sky
-		//var removeSky = selectSky();
-		// Make redlayer active and fill selection with black
-		//if (removeSky == "success") {
-		//	app.activeDocument.activeLayer = redlayer;
-		//	app.activeDocument.selection.fill(myColor_black);
-		//	app.activeDocument.selection.deselect();
-		//}//
 
-		// remove low contrast areas
-		var lowContrastLayer = selectLowContrastAreas(imagelayer, doc_scale*30, 128);
+		// Remove low contrast areas. Experiment with different trheshold values.
+		var lowContrastLayer = selectLowContrastAreas(imagelayer, doc_scale*30, 100);
 		app.activeDocument.activeLayer = redlayer;
 		app.activeDocument.selection.fill(myColor_black);
 		app.activeDocument.selection.deselect();
