@@ -11,7 +11,7 @@
 
 // Settings ------------------------------------------------------------
 
-var save = false;
+var save = true;
 var threshold = "auto";
 var min_threshold = 235;
 var global_threshold = "auto";
@@ -298,6 +298,9 @@ function selectLowContrastAreas(imagelayer, highPassRadius, threshold) {
 
 	// Delete the low contrast layer
 	lowContrastLayer.remove();
+
+	// Delete the alpha channel
+    alphaChannel.remove();
 
     return lowContrastLayer;
 }
