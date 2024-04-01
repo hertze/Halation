@@ -306,7 +306,6 @@ function selectLowContrastAreas(imagelayer, highPassRadius, threshold) {
 	// Delete the alpha channel
     alphaChannel.remove();
 
-    return lowContrastLayer;
 }
 
 
@@ -433,7 +432,7 @@ try {
 		app.activeDocument.activeLayer = imagelayer;
 
 		// Remove low contrast areas. Experiment with different trheshold values. The lower, the more halation.
-		var lowContrastLayer = selectLowContrastAreas(imagelayer, doc_scale*30, 50);
+		selectLowContrastAreas(imagelayer, doc_scale*30, 50);
 		app.activeDocument.activeLayer = redlayer;
 		app.activeDocument.selection.fill(myColor_black);
 		app.activeDocument.selection.deselect();
