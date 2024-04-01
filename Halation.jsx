@@ -11,7 +11,7 @@
 
 // Settings ------------------------------------------------------------
 
-var save = true;
+var save = false;
 var threshold = "auto";
 var min_threshold = 235;
 var global_threshold = "auto";
