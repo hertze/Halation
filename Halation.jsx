@@ -269,7 +269,7 @@ function saveClose() {
 		jpgSaveOptions.quality = 12;
 		app.activeDocument.saveAs(jpgFile, jpgSaveOptions, false, Extension.LOWERCASE);
 	}
-	app.activeDocument.close();
+	app.activeDocument.close(SaveOptions.DONOTSAVECHANGES);
 }
 
 function selectLowContrastAreas(imagelayer, highPassRadius, threshold) {
