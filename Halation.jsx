@@ -345,113 +345,121 @@ var runtimesettings = getRecipe();
 if (runtimesettings.recipe != "none") { processRecipe(runtimesettings); }
 
 try {	
-	if (executeScript == true) {
-		
-		if (threshold === "auto" || global_threshold === "auto") {
-			// If the brightest level is lower than min_threshold, brightestLevel is set to min_threshold.
-			var brightestLevel = Math.max(findBrightestLevelInHistogram(), min_threshold);
-			if (threshold === "auto") {
-				threshold = brightestLevel - 8;
-			}
-			if (global_threshold === "auto") {
-				global_threshold = Math.round(brightestLevel - (65 / 255 * brightestLevel));
-			}
-		} else {
-			// Setting it to 1 makes it having no effect in calculating global_threshold below.
-			var brightestLevel = 1;
-		}
-		
-		var orangecutlayer = duplicateLayer(imagelayer, "cut");
-		var orangeredlayer = duplicateLayer(imagelayer, "orangered");
-		var orangelayer = duplicateLayer(imagelayer, "orange");
-		var redcutlayer = duplicateLayer(imagelayer, "cut");
-		var redlayer = duplicateLayer(imagelayer, "local /" + " " + brightestLevel);
-		var globalcutlayer = duplicateLayer(imagelayer, "global cut");
-		var globallayer = duplicateLayer(imagelayer, "global");
-		
-		applyThreshold(globalcutlayer, global_threshold);
-		applyThreshold(globallayer, global_threshold - Math.round(60/255*brightestLevel));
-		applyThreshold(orangecutlayer, threshold);
-		applyThreshold(redcutlayer, threshold - 8);
-		applyThreshold(orangelayer, threshold);
-		applyThreshold(orangeredlayer, threshold);
-		applyThreshold(redlayer, threshold - 8);
-		
-		app.activeDocument.activeLayer = redlayer;
-		colorOverlay(red_outer, green_outer, blue_outer);
-		rasterizeLayer();
-		
-		app.activeDocument.activeLayer = orangelayer;
-		colorOverlay(red_inner, green_inner, blue_inner);
-		rasterizeLayer();
+    if (executeScript == true) {
+        // Calculate thresholds
+        if (threshold === "auto" || global_threshold === "auto") {
+            var brightestLevel = Math.max(findBrightestLevelInHistogram(), min_threshold);
+            if (threshold === "auto") threshold = brightestLevel - 8;
+            if (global_threshold === "auto") global_threshold = Math.round(brightestLevel - (65 / 255 * brightestLevel));
+        } else {
+            var brightestLevel = 1;
+        }
+        
+        // Duplicate layers
+        var orangecutlayer = duplicateLayer(imagelayer, "cut");
+        var orangeredlayer = duplicateLayer(imagelayer, "orangered");
+        var orangelayer = duplicateLayer(imagelayer, "orange");
+        var redcutlayer = duplicateLayer(imagelayer, "cut");
+        var redlayer = duplicateLayer(imagelayer, "local /" + " " + brightestLevel);
 
-		app.activeDocument.activeLayer = orangeredlayer;
-		colorOverlay(red_outer, green_outer, blue_outer);
-		rasterizeLayer();
-		
-		redlayer.applyGaussianBlur(Math.round(doc_scale*bloom));
-		redcutlayer.applyGaussianBlur(Math.round(doc_scale*2));
-		orangelayer.applyGaussianBlur(Math.round(doc_scale*bloom*0.67));
-		orangeredlayer.applyGaussianBlur(Math.round(doc_scale*bloom));
-		orangecutlayer.applyGaussianBlur(Math.round(doc_scale));
-		
-		globalcutlayer.blendMode = BlendMode.DIFFERENCE;
-		globalcutlayer.merge();
-		
-		globallayer.applyGaussianBlur(Math.round(doc_scale*20));
-		
-		app.activeDocument.activeLayer = globallayer;
-		colorOverlay(red_global, green_global, blue_global);
-		rasterizeLayer();
-		
-		globallayer.blendMode = BlendMode.SCREEN;
-		
-		var darken = globallayer.duplicate();
-		darken.name = "darken midtones";
-		darken.desaturate();
-		darken.invert();
-		darken.blendMode = BlendMode.MULTIPLY;
-		darken.opacity = darken_global;
-		
-		orangeredlayer.blendMode = BlendMode.SCREEN;
-		orangeredlayer.merge();
+        // Apply threshold
+        applyThreshold(orangecutlayer, threshold);
+        applyThreshold(redcutlayer, threshold - 8);
+        applyThreshold(orangelayer, threshold);
+        applyThreshold(orangeredlayer, threshold);
+        applyThreshold(redlayer, threshold - 8);
 
-		orangecutlayer.invert();
-		orangecutlayer.blendMode = BlendMode.MULTIPLY;
-		orangecutlayer.merge();
-		
-		redcutlayer.invert();
-		redcutlayer.blendMode = BlendMode.MULTIPLY;
-		redcutlayer.merge();
-		
-		orangelayer.blendMode = BlendMode.SCREEN;
-		orangelayer.merge();
+        // Handle darken_global
+        if (darken_global > 0) {
+            var globalcutlayer = duplicateLayer(imagelayer, "global cut");
+            var globallayer = duplicateLayer(imagelayer, "global");
 
-		// Make original layer active
-		app.activeDocument.activeLayer = imagelayer;
+            applyThreshold(globalcutlayer, global_threshold);
+            applyThreshold(globallayer, global_threshold - Math.round(60/255*brightestLevel));
+        }
+        
+        // Apply color overlay and rasterize
+        app.activeDocument.activeLayer = redlayer;
+        colorOverlay(red_outer, green_outer, blue_outer);
+        rasterizeLayer();
+        
+        app.activeDocument.activeLayer = orangelayer;
+        colorOverlay(red_inner, green_inner, blue_inner);
+        rasterizeLayer();
 
-		// Remove low contrast areas. Experiment with different trheshold values. The lower, the more halation.
-		selectLowContrastAreas(imagelayer, doc_scale*30, 50);
-		app.activeDocument.activeLayer = redlayer;
-		app.activeDocument.selection.fill(myColor_black);
-		app.activeDocument.selection.deselect();
+        app.activeDocument.activeLayer = orangeredlayer;
+        colorOverlay(red_outer, green_outer, blue_outer);
+        rasterizeLayer();
+        
+        // Apply Gaussian blur
+        redlayer.applyGaussianBlur(Math.round(doc_scale*bloom));
+        redcutlayer.applyGaussianBlur(Math.round(doc_scale*2));
+        orangelayer.applyGaussianBlur(Math.round(doc_scale*bloom*0.67));
+        orangeredlayer.applyGaussianBlur(Math.round(doc_scale*bloom));
+        orangecutlayer.applyGaussianBlur(Math.round(doc_scale));
+        
+        // Handle darken_global
+        if (darken_global > 0) {
+            globalcutlayer.blendMode = BlendMode.DIFFERENCE;
+            globalcutlayer.merge();
 
-		redlayer.blendMode = BlendMode.SCREEN;
+            globallayer.applyGaussianBlur(Math.round(doc_scale*20));
+        
+            app.activeDocument.activeLayer = globallayer;
+            colorOverlay(red_global, green_global, blue_global);
+            rasterizeLayer();
 
-		// Boost the effect with a curve
-		redlayer.adjustCurves([[0, 0], [40, Math.round(40+boost/5)], [85, 85+boost], [255, 255]]);
-		
-		finalGroup = app.activeDocument.layerSets.add();
-		finalGroup.name = "Halation";
-		
-		globallayer.move(finalGroup, ElementPlacement.INSIDE);
-		darken.move(finalGroup, ElementPlacement.INSIDE);
-		redlayer.move(finalGroup, ElementPlacement.INSIDE);
-		
-		app.activeDocument.flatten();
-		
-		if (save == true ) { saveClose(); }
-	
-	}
-	
+            globallayer.blendMode = BlendMode.SCREEN;
+        
+            var darken = globallayer.duplicate();
+            darken.name = "darken midtones";
+            darken.desaturate();
+            darken.invert();
+            darken.blendMode = BlendMode.MULTIPLY;
+            darken.opacity = darken_global;
+        }
+        
+        // Set blend mode and merge
+        orangeredlayer.blendMode = BlendMode.SCREEN;
+        orangeredlayer.merge();
+
+        orangecutlayer.invert();
+        orangecutlayer.blendMode = BlendMode.MULTIPLY;
+        orangecutlayer.merge();
+        
+        redcutlayer.invert();
+        redcutlayer.blendMode = BlendMode.MULTIPLY;
+        redcutlayer.merge();
+        
+        orangelayer.blendMode = BlendMode.SCREEN;
+        orangelayer.merge();
+
+        // Make original layer active
+        app.activeDocument.activeLayer = imagelayer;
+
+        // Remove low contrast areas
+        selectLowContrastAreas(imagelayer, doc_scale*30, 50);
+        app.activeDocument.activeLayer = redlayer;
+        app.activeDocument.selection.fill(myColor_black);
+        app.activeDocument.selection.deselect();
+
+        // Set blend mode and adjust curves
+        redlayer.blendMode = BlendMode.SCREEN;
+        redlayer.adjustCurves([[0, 0], [40, Math.round(40+boost/5)], [85, 85+boost], [255, 255]]);
+        
+        // Group layers
+        finalGroup = app.activeDocument.layerSets.add();
+        finalGroup.name = "Halation";
+        
+        if (darken_global > 0) {
+            globallayer.move(finalGroup, ElementPlacement.INSIDE);
+            darken.move(finalGroup, ElementPlacement.INSIDE);
+        }
+        redlayer.move(finalGroup, ElementPlacement.INSIDE);
+        
+        // Flatten document and save if necessary
+        app.activeDocument.flatten();
+        if (save == true ) { saveClose(); }
+    }
+    
 } catch (e) { alert(e); }
