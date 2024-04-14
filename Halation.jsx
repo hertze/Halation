@@ -17,7 +17,6 @@ var min_threshold = 235;
 var global_threshold = "auto";
 var bloom = 15;
 var boost = 40;
-var darken_local = 60;
 var darken_global = 40;
 var red_inner = 204;
 var green_inner = 120;
