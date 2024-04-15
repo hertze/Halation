@@ -12,7 +12,7 @@ This is a script plugin for Photoshop that simulates film-like halation.
 
 4. Start Photoshop and make sure **Halation** shows up in the menu File/Automate.
 
-5. Install the Photoshop actions by double-clicking on the files **Halation.atn**, **Halation-local** and **Halation-mono.atn**, or by loading it in the Actions palette.
+5. Install the Photoshop actions by double-clicking on the files **Halation.atn** and **Halation-mono.atn**, or by loading it in the Actions palette.
 
 ## How to run
 
@@ -26,31 +26,25 @@ The script takes 13 settings, written as a semicolon-separated text string (reci
 
 2. The minimum highlight threshold for local halation, from `1` to `255`.
 
-3. The threshold for global halation, from `1` to `255`, or `auto`. 
+3. The bloom (halo radius), from `1` to `100`.
 
-4. The bloom (halo radius), from `1` to `100`.
+4. How much the effect should be boosted, from `0`to `170`.
 
-5. How much the effect should be boosted, from `0`to `170`.
+5. The red value of the inner halation, from `0` to `255`.
 
-6. The red value of the inner halation, from `0` to `255`.
+6. The green value of the inner halation, from `0` to `255`.
 
-7. The green value of the inner halation, from `0` to `255`.
+7. The blue value of the inner halation, from `0` to `255`.
 
-8. The blue value of the inner halation, from `0` to `255`.
+8. The red value of the outer halation, from `0` to `255`.
 
-9. The red value of the outer halation, from `0` to `255`.
+9. The green value of the outer halation, from `0` to `255`.
 
-10. The green value of the outer halation, from `0` to `255`.
-
-11. The blue value of the outer halation, from `0` to `255`.
+10. The blue value of the outer halation, from `0` to `255`.
 
 
 ## Tips and tricks
 
-1. If you want to remove the halation from some parts of the image (sunset skies, for instance), hit option + Z on a Mac, or ctrl + Z on a PC, to undo the last script step. You then get a folder with three layers, **local** for local halation, **darken midtones** that compensates for the increase in brightness that the global halation adds, and **global** with the global halation. With black selected you can simply brush out local and global halation you don't want in their respective layer.
+1. If you want to change the color values in actions, darker colors results in a weaker effekt and brighter colors in a stronger effect. If you set the red, green and blue color to the same value you get a grayscale color, useful for monochrome halation.
 
-2. If you want to change the color values, darker colors results in a weaker effekt and brighter colors in a stronger effect. If you set the red, green and blue color to the same value you get a grayscale color, useful for monochrome halation.
-
-3. If you don't want any global halation, set #5, #12, #13 and #14 above to `0`.
-
-4. Setting #1 and #2 to `auto` means the script will determine the brightest level in your image and calculate where to place local and global halation from there.
+2. Setting #1 `auto` means the script will determine the brightest level in your image and calculate where to place local and global halation from there.
