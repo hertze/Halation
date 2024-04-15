@@ -349,46 +349,60 @@ try {
 		var levels = [];
 
 		for (var i = 0; i < total_levels; i++) {
-			levels.push([brightestLevel - 8 - (i * 4), bloom * Math.pow(0.67, total_levels - 1 - i)]);
+			var red = Math.round(red_inner + (red_outer - red_inner) * (i / (total_levels - 1)));
+			var green = Math.round(green_inner + (green_outer - green_inner) * (i / (total_levels - 1)));
+			var blue = Math.round(blue_inner + (blue_outer - blue_inner) * (i / (total_levels - 1)));
+		
+			levels.push([brightestLevel - 8 - (i * 4), bloom * Math.pow(0.67, total_levels - 1 - i), red, green, blue]);
 		}
         
 		var originalTopmostLayer = app.activeDocument.layers[0];
-		
+
+		// Create a new layer set named "Halation"
+		var halationFolder = app.activeDocument.layerSets.add();
+		halationFolder.name = "Halation";
+
 		for (var i = levels.length - 1; i >= 0; i--) {
 			alert("Threshold: " + levels[i][0] + ", Blur: " + levels[i][1]);
-		
-			var halationLayer = originalTopmostLayer.duplicate(originalTopmostLayer, ElementPlacement.PLACEAFTER);
+
+			var halationLayer = originalTopmostLayer.duplicate(halationFolder, ElementPlacement.PLACEATBEGINNING);
 			halationLayer.name = "Halation " + (i + 1);
-		
+
 			applyThreshold(halationLayer, levels[i][0]);
-		
+
 			app.activeDocument.activeLayer = halationLayer;
-			colorOverlay(red_outer, green_outer, blue_outer);
-		
+			colorOverlay(levels[i][2], levels[i][3], levels[i][4]);
+
 			rasterizeLayer();
-		
+
 			halationLayer.applyGaussianBlur(Math.round(levels[i][1]));
-		
+
 			halationLayer.blendMode = BlendMode.SCREEN;
-		
-			var cutoutLayer = originalTopmostLayer.duplicate(halationLayer, ElementPlacement.PLACEBEFORE);
+
+			var cutoutLayer = originalTopmostLayer.duplicate(halationFolder, ElementPlacement.PLACEATBEGINNING);
 			cutoutLayer.name = "Cutout " + (i + 1);
 			applyThreshold(cutoutLayer, levels[i][0]);
 			cutoutLayer.invert();
-		
+
 			app.activeDocument.activeLayer = cutoutLayer;
-			colorOverlay(red_outer, green_outer, blue_outer);
-		
+			colorOverlay(levels[i][2], levels[i][3], levels[i][4]);
+
 			rasterizeLayer();
-		
+
 			cutoutLayer.applyGaussianBlur(Math.round(doc_scale));
-		
+
 			cutoutLayer.blendMode = BlendMode.MULTIPLY;
 			cutoutLayer.merge();
-		
-			// Move the original layer to the bottom
-			originalTopmostLayer.move(app.activeDocument, ElementPlacement.PLACEATEND);
+
+			// If it's not the first iteration, merge halationLayer down
+			if (i < levels.length - 1) {
+				halationLayer.merge();
+			}
+
 		}
+
+		// Move the "Halation" folder above the original layer
+		halationFolder.move(originalTopmostLayer, ElementPlacement.PLACEBEFORE);
 
 
 		throw new Error("This script is not yet finished. Please try again later.");
