@@ -16,10 +16,10 @@ var threshold = "auto";
 var min_threshold = 235;
 var bloom = 15;
 var boost = 20;
-var red_inner = 204;
-var green_inner = 204;
+var red_inner = 200;
+var green_inner = 180;
 var blue_inner = 0;
-var red_outer = 204;
+var red_outer = 200;
 var green_outer = 10;
 var blue_outer = 0;
 
