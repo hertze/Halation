@@ -365,7 +365,7 @@ try {
 			doc.activeLayer = halationLayer; // Set the active layer to the halation layer
 			colorOverlay(levels[i][2], levels[i][3], levels[i][4]); // Apply a color overlay based on the current level
 			rasterizeLayer(); // Rasterize the halation layer
-			halationLayer.applyGaussianBlur(Math.round(levels[i][1])); // Apply a Gaussian blur based on the current level
+			halationLayer.applyGaussianBlur(Math.round(doc_scale*levels[i][1])); // Apply a Gaussian blur based on the current level
 			halationLayer.blendMode = BlendMode.SCREEN; // Set the blend mode of the halation layer to Screen
 
 			// Create and configure the cutout layer
