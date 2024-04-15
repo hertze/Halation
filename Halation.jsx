@@ -15,7 +15,7 @@ var save = false;
 var threshold = "auto";
 var min_threshold = 235;
 var bloom = 15;
-var boost = 0;
+var boost = 20;
 var red_inner = 204;
 var green_inner = 120;
 var blue_inner = 0;
@@ -354,6 +354,7 @@ try {
 
 		// Iterate over the levels array in reverse order
 		for (var i = levels.length - 1; i >= 0; i--) {
+
 			// Create and configure the halation layer
 			var halationLayer = originalTopmostLayer.duplicate(halationFolder, ElementPlacement.PLACEATBEGINNING);
 			halationLayer.name = "Halation " + (levels.length - i); // Naming the layer "Halation" followed by its order
@@ -385,7 +386,9 @@ try {
 			if (i < levels.length - 1) {
 				halationLayer.merge();
 			}
+			
 		}
+
 		// Move the "Halation" folder above the original layer
 		halationFolder.move(originalTopmostLayer, ElementPlacement.PLACEBEFORE);
 
