@@ -156,20 +156,20 @@ function processRecipe(runtimesettings) {
 	thisRecipe = thisRecipe.replace(/;+$/, ""); // Removes trailing ;
 	
 	// Check recipe against syntax
-	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]|(auto));([0-9]|([1-9][0-9])|100);(170|1[0-6][0-9]|[1-9][0-9]?|0);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]));([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$', 'gm');
+	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]|(auto));([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|([1-9][0-9])|100);(170|1[0-6][0-9]|[1-9][0-9]?|0);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]));([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$', 'gm');
 	
 	if (regex.exec(thisRecipe) !== null) {
 		thisRecipe = thisRecipe.split(";"); // Splits into array at ;
 		threshold = (thisRecipe[0] === "auto") ? "auto" : parseInt(thisRecipe[0]);
 		min_threshold = parseInt(thisRecipe[1]);
-		bloom = parseInt(thisRecipe[3]);
-		boost = parseInt(thisRecipe[4]);
-		red_inner = parseInt(thisRecipe[6]);
-		green_inner = parseInt(thisRecipe[7]);
-		blue_inner = parseInt(thisRecipe[8]);
-		red_outer = parseInt(thisRecipe[9]);
-		green_outer = parseInt(thisRecipe[10]);
-		blue_outer = parseInt(thisRecipe[11]);
+		bloom = parseInt(thisRecipe[2]);
+		boost = parseInt(thisRecipe[3]);
+		red_inner = parseInt(thisRecipe[4]);
+		green_inner = parseInt(thisRecipe[5]);
+		blue_inner = parseInt(thisRecipe[6]);
+		red_outer = parseInt(thisRecipe[7]);
+		green_outer = parseInt(thisRecipe[8]);
+		blue_outer = parseInt(thisRecipe[9]);
 	} else {
 		executeScript = false;
 		alert("Sorry, but that recipe is faulty! Please check it's syntax and it's settings and then try again.");
