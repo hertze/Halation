@@ -13,13 +13,13 @@
 
 var threshold = "auto";
 var min_threshold = 235;
-var bloom = 15;
+var bloom = 10;
 var boost = 0;
 var red_inner = 200;
 var green_inner = 180;
 var blue_inner = 0;
 var red_outer = 200;
-var green_outer = 10;
+var green_outer = 0;
 var blue_outer = 0;
 
 var save = false;
@@ -335,7 +335,7 @@ try {
             var brightestLevel = threshold;
         }
 
-		var total_levels = 3; // Total number of iterations of the halation effect
+		var total_levels = 4; // Total number of iterations of the halation effect
 		var levels_span = 20; // How many levels of the histogram should be spanned by the halation effect
 		var levels = []; // Array to store the halation layer values
 
