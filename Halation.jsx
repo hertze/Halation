@@ -14,7 +14,7 @@
 var save = false;
 var threshold = "auto";
 var min_threshold = 235;
-var bloom = 50;
+var bloom = 15;
 var boost = 0;
 var red_inner = 204;
 var green_inner = 120;
@@ -353,7 +353,7 @@ try {
 			var green = Math.round(green_inner + (green_outer - green_inner) * (i / (total_levels - 1)));
 			var blue = Math.round(blue_inner + (blue_outer - blue_inner) * (i / (total_levels - 1)));
 		
-			var bloomValue = bloom * ((i / (total_levels - 1)) * (1 - 1/total_levels) + 1/total_levels);
+			var bloomValue = bloom * (Math.log(i + 1) / Math.log(total_levels) * (1 - 1/total_levels) + 1/total_levels);
 		
 			levels.push([brightestLevel - 8 - (i * 4), bloomValue, red, green, blue]);
 		}
