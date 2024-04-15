@@ -342,7 +342,7 @@ try {
 			var green = Math.round(green_inner + (green_outer - green_inner) * (i / (total_levels - 1)));
 			var blue = Math.round(blue_inner + (blue_outer - blue_inner) * (i / (total_levels - 1)));
 		
-			var bloomValue = bloom * ((i / (total_levels - 1)) * (1 - 1/total_levels) + 1/total_levels);
+			var bloomValue = bloom * (Math.log(i + 2) / Math.log(total_levels + 1) * (1 - 1/(total_levels + 1)) + 1/(total_levels + 1));
 		
 			levels.push([brightestLevel - 8 - (i * 4), bloomValue, red, green, blue]);
 		}
