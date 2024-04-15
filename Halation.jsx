@@ -11,10 +11,9 @@
 
 // Settings ------------------------------------------------------------
 
-var save = false;
 var threshold = "auto";
 var min_threshold = 235;
-var bloom = 50;
+var bloom = 15;
 var boost = 0;
 var red_inner = 200;
 var green_inner = 180;
@@ -22,6 +21,8 @@ var blue_inner = 0;
 var red_outer = 200;
 var green_outer = 10;
 var blue_outer = 0;
+
+var save = false;
 
 // ---------------------------------------------------------------------
 
@@ -177,7 +178,7 @@ function processRecipe(runtimesettings) {
 }
 
 function findBrightestLevelInHistogram() {
-	var histogram = app.activeDocument.histogram;
+	var histogram = doc.histogram;
 	var brightestLevel = histogram.length - 1;
 	while (histogram[brightestLevel] === 0 && brightestLevel >= 0) {
 		brightestLevel--;
@@ -226,8 +227,8 @@ function rasterizeLayer() {
 
 
 function saveClose() {
-	var file_ending = app.activeDocument.name.split('.').pop().toLowerCase();
-	var fPath = app.activeDocument.path;
+	var file_ending = doc.name.split('.').pop().toLowerCase();
+	var fPath = doc.path;
 	
 	if (file_ending == "tif" || file_ending == "tiff") {
 		// Save out the image as tiff
@@ -236,7 +237,7 @@ function saveClose() {
 		tiffSaveOptions.imageCompression = TIFFEncoding.NONE;
 		tiffSaveOptions.layers = false;
 		tiffSaveOptions.embedColorProfile = true;
-		app.activeDocument.saveAs(tiffFile, tiffSaveOptions, false, Extension.LOWERCASE);
+		doc.saveAs(tiffFile, tiffSaveOptions, false, Extension.LOWERCASE);
 	} else {
 		// Save out the image as jpeg
 		var jpgFile = new File(fPath);
@@ -245,9 +246,9 @@ function saveClose() {
 		jpgSaveOptions.embedColorProfile = true;
 		jpgSaveOptions.matte = MatteType.NONE;
 		jpgSaveOptions.quality = 12;
-		app.activeDocument.saveAs(jpgFile, jpgSaveOptions, false, Extension.LOWERCASE);
+		doc.saveAs(jpgFile, jpgSaveOptions, false, Extension.LOWERCASE);
 	}
-	app.activeDocument.close(SaveOptions.DONOTSAVECHANGES);
+	doc.close(SaveOptions.DONOTSAVECHANGES);
 }
 
 function selectLowContrastAreas(imagelayer, highPassRadius, threshold) {
@@ -260,20 +261,20 @@ function selectLowContrastAreas(imagelayer, highPassRadius, threshold) {
 	lowContrastLayer.applyGaussianBlur(doc_scale*20);
 
     // Create an alpha channel from the low contrast layer
-    var alphaChannel = app.activeDocument.channels.add();
+    var alphaChannel = doc.channels.add();
     alphaChannel.kind = ChannelType.SELECTEDAREA;
     alphaChannel.name = "Low Contrast Areas";
 
     // Copy the low contrast layer to the alpha channel
     lowContrastLayer.copy();
-    app.activeDocument.activeChannels = [alphaChannel];
-    app.activeDocument.paste();
+    doc.activeChannels = [alphaChannel];
+    doc.paste();
 
     // Load the alpha channel into the selection
-    app.activeDocument.selection.load(alphaChannel);
+    doc.selection.load(alphaChannel);
 
 	try {
-		app.activeDocument.selection.contract(UnitValue(Math.round(doc_scale*bloom), "px")); // Contract the selection
+		doc.selection.contract(UnitValue(Math.round(doc_scale*bloom), "px")); // Contract the selection
 	} catch (e) {
 		// An error will be thrown if there is no selection, so you can ignore it
 	}
@@ -294,8 +295,8 @@ var doc = app.activeDocument;
 app.preferences.rulerUnits = Units.PIXELS;
 app.displayDialogs = DialogModes.NO;
 
-var doc_height = app.activeDocument.height;
-var doc_width = app.activeDocument.width;
+var doc_height = doc.height;
+var doc_width = doc.width;
 var ratio = doc_height / doc_width;
 
 
@@ -306,8 +307,8 @@ var negative_size = ratio > 1 ? doc_width : doc_height;
 var doc_scale = negative_size.value / 3600;
 
 // Sets up existing image layer
-app.activeDocument.activeLayer.isBackgroundLayer = false; // Unlocks background layer
-var imagelayer = app.activeDocument.activeLayer;
+doc.activeLayer.isBackgroundLayer = false; // Unlocks background layer
+var imagelayer = doc.activeLayer;
 imagelayer.name = "original"; // Names background layer
 
 var myColor_black = new SolidColor(); 
@@ -347,11 +348,11 @@ try {
 			levels.push([brightestLevel - 8 - (i * 4), bloomValue, red, green, blue]);
 		}
         
-		var originalTopmostLayer = app.activeDocument.layers[0];
+		var originalTopmostLayer = doc.layers[0];
 		var lastUnmergedLayer;
 
 		// Create a new layer set named "Halation"
-		var halationFolder = app.activeDocument.layerSets.add();
+		var halationFolder = doc.layerSets.add();
 		halationFolder.name = "Halation";
 
 		// Iterate over the levels array in reverse order
@@ -361,7 +362,7 @@ try {
 			var halationLayer = originalTopmostLayer.duplicate(halationFolder, ElementPlacement.PLACEATBEGINNING);
 			halationLayer.name = "Halation"; // Naming the layer "Halation" followed by its order
 			halationLayer.threshold(levels[i][0]); // Apply a threshold based on the current level
-			app.activeDocument.activeLayer = halationLayer; // Set the active layer to the halation layer
+			doc.activeLayer = halationLayer; // Set the active layer to the halation layer
 			colorOverlay(levels[i][2], levels[i][3], levels[i][4]); // Apply a color overlay based on the current level
 			rasterizeLayer(); // Rasterize the halation layer
 			halationLayer.applyGaussianBlur(Math.round(levels[i][1])); // Apply a Gaussian blur based on the current level
@@ -372,7 +373,7 @@ try {
 			cutoutLayer.name = "Cutout"; // Naming the layer "Cutout" followed by its order
 			cutoutLayer.threshold(levels[i][0]); // Apply a threshold based on the current level
 			cutoutLayer.invert(); // Invert the cutout layer
-			app.activeDocument.activeLayer = cutoutLayer; // Set the active layer to the cutout layer
+			doc.activeLayer = cutoutLayer; // Set the active layer to the cutout layer
 			colorOverlay(levels[i][2], levels[i][3], levels[i][4]); // Apply a color overlay based on the current level
 			rasterizeLayer(); // Rasterize the cutout layer
 			cutoutLayer.applyGaussianBlur(Math.round(doc_scale)); // Apply a Gaussian blur based on the document scale
@@ -396,9 +397,9 @@ try {
 
 		// Remove low contrast areas
 		selectLowContrastAreas(imagelayer, doc_scale*30, 50);
-		app.activeDocument.activeLayer = lastUnmergedLayer;
-		app.activeDocument.selection.fill(myColor_black);
-		app.activeDocument.selection.deselect();
+		doc.activeLayer = lastUnmergedLayer;
+		doc.selection.fill(myColor_black);
+		doc.selection.deselect();
 
 		// Adjust curves
         if (boost > 0) {
@@ -406,7 +407,7 @@ try {
 		}
         
         // Flatten document and save if necessary
-        app.activeDocument.flatten();
+        doc.flatten();
         if (save == true ) { saveClose(); }
     }
     
