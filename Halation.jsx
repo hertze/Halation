@@ -359,7 +359,7 @@ try {
 
 			// Create and configure the halation layer
 			var halationLayer = originalTopmostLayer.duplicate(halationFolder, ElementPlacement.PLACEATBEGINNING);
-			halationLayer.name = "Halation " + (levels.length - i); // Naming the layer "Halation" followed by its order
+			halationLayer.name = "Halation"; // Naming the layer "Halation" followed by its order
 			halationLayer.threshold(levels[i][0]); // Apply a threshold based on the current level
 			app.activeDocument.activeLayer = halationLayer; // Set the active layer to the halation layer
 			colorOverlay(levels[i][2], levels[i][3], levels[i][4]); // Apply a color overlay based on the current level
@@ -369,7 +369,7 @@ try {
 
 			// Create and configure the cutout layer
 			var cutoutLayer = originalTopmostLayer.duplicate(halationFolder, ElementPlacement.PLACEATBEGINNING);
-			cutoutLayer.name = "Cutout " + (levels.length - i); // Naming the layer "Cutout" followed by its order
+			cutoutLayer.name = "Cutout"; // Naming the layer "Cutout" followed by its order
 			cutoutLayer.threshold(levels[i][0]); // Apply a threshold based on the current level
 			cutoutLayer.invert(); // Invert the cutout layer
 			app.activeDocument.activeLayer = cutoutLayer; // Set the active layer to the cutout layer
