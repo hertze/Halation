@@ -337,7 +337,7 @@ try {
 
 		var total_levels = 3; // Total number of iterations of the halation effect
 		var levels_span = 20; // How many levels of the histogram should be spanned by the halation effect
-		var levels = [];
+		var levels = []; // Array to store the halation layer values
 
 		for (var i = 0; i < total_levels; i++) {
 			var red = Math.round(red_inner + (red_outer - red_inner) * (i / (total_levels - 1)));
@@ -353,8 +353,8 @@ try {
 			levels.push([levelValue, bloomValue, red, green, blue]);
 		}
         
+		// Save for later use
 		var originalTopmostLayer = doc.layers[0];
-		var lastUnmergedLayer;
 
 		// Create a new layer set named "Halation"
 		var halationFolder = doc.layerSets.add();
@@ -387,7 +387,7 @@ try {
 
 			// If it's the first iteration, store the halation layer in lastUnmergedLayer
 			if (i == levels.length - 1) {
-				lastUnmergedLayer = halationLayer;
+				var lastUnmergedLayer = halationLayer;
 			}
 
 			// If it's not the first iteration, merge halationLayer down
@@ -411,7 +411,7 @@ try {
 			lastUnmergedLayer.adjustCurves([[0, 0], [40, Math.round(40+boost/5)], [85, 85+boost], [255, 255]]);
 		}
         
-        // Flatten document and save if necessary
+        // Flatten document and save if needed
         doc.flatten();
         if (save == true ) { saveClose(); }
     }
