@@ -334,7 +334,7 @@ try {
             var brightestLevel = threshold;
         }
 
-		var total_levels = 2;
+		var total_levels = 3;
 		var levels = [];
 
 		for (var i = 0; i < total_levels; i++) {
@@ -352,37 +352,31 @@ try {
 		var halationFolder = app.activeDocument.layerSets.add();
 		halationFolder.name = "Halation";
 
+		// Iterate over the levels array in reverse order
 		for (var i = levels.length - 1; i >= 0; i--) {
-			alert("Threshold: " + levels[i][0] + ", Blur: " + levels[i][1]);
-
+			// Create and configure the halation layer
 			var halationLayer = originalTopmostLayer.duplicate(halationFolder, ElementPlacement.PLACEATBEGINNING);
-			halationLayer.name = "Halation";
-			halationLayer.threshold(levels[i][0]);
+			halationLayer.name = "Halation " + (levels.length - i); // Naming the layer "Halation" followed by its order
+			halationLayer.threshold(levels[i][0]); // Apply a threshold based on the current level
+			app.activeDocument.activeLayer = halationLayer; // Set the active layer to the halation layer
+			colorOverlay(levels[i][2], levels[i][3], levels[i][4]); // Apply a color overlay based on the current level
+			rasterizeLayer(); // Rasterize the halation layer
+			halationLayer.applyGaussianBlur(Math.round(levels[i][1])); // Apply a Gaussian blur based on the current level
+			halationLayer.blendMode = BlendMode.SCREEN; // Set the blend mode of the halation layer to Screen
 
-			app.activeDocument.activeLayer = halationLayer;
-			colorOverlay(levels[i][2], levels[i][3], levels[i][4]);
-
-			rasterizeLayer();
-
-			halationLayer.applyGaussianBlur(Math.round(levels[i][1]));
-
-			halationLayer.blendMode = BlendMode.SCREEN;
-
+			// Create and configure the cutout layer
 			var cutoutLayer = originalTopmostLayer.duplicate(halationFolder, ElementPlacement.PLACEATBEGINNING);
-			cutoutLayer.name = "Cutout";
-			cutoutLayer.threshold(levels[i][0]);
-			cutoutLayer.invert();
+			cutoutLayer.name = "Cutout " + (levels.length - i); // Naming the layer "Cutout" followed by its order
+			cutoutLayer.threshold(levels[i][0]); // Apply a threshold based on the current level
+			cutoutLayer.invert(); // Invert the cutout layer
+			app.activeDocument.activeLayer = cutoutLayer; // Set the active layer to the cutout layer
+			colorOverlay(levels[i][2], levels[i][3], levels[i][4]); // Apply a color overlay based on the current level
+			rasterizeLayer(); // Rasterize the cutout layer
+			cutoutLayer.applyGaussianBlur(Math.round(doc_scale)); // Apply a Gaussian blur based on the document scale
+			cutoutLayer.blendMode = BlendMode.MULTIPLY; // Set the blend mode of the cutout layer to Multiply
+			cutoutLayer.merge(); // Merge the cutout layer down
 
-			app.activeDocument.activeLayer = cutoutLayer;
-			colorOverlay(levels[i][2], levels[i][3], levels[i][4]);
-
-			rasterizeLayer();
-
-			cutoutLayer.applyGaussianBlur(Math.round(doc_scale));
-
-			cutoutLayer.blendMode = BlendMode.MULTIPLY;
-			cutoutLayer.merge();
-
+			// If it's the first iteration, store the halation layer in lastUnmergedLayer
 			if (i == levels.length - 1) {
 				lastUnmergedLayer = halationLayer;
 			}
@@ -391,9 +385,7 @@ try {
 			if (i < levels.length - 1) {
 				halationLayer.merge();
 			}
-
 		}
-
 		// Move the "Halation" folder above the original layer
 		halationFolder.move(originalTopmostLayer, ElementPlacement.PLACEBEFORE);
 
@@ -404,7 +396,9 @@ try {
 		app.activeDocument.selection.deselect();
 
 		// Adjust curves
-        lastUnmergedLayer.adjustCurves([[0, 0], [40, Math.round(40+boost/5)], [85, 85+boost], [255, 255]]);
+        if (boost > 0) {
+			lastUnmergedLayer.adjustCurves([[0, 0], [40, Math.round(40+boost/5)], [85, 85+boost], [255, 255]]);
+		}
         
         // Flatten document and save if necessary
         app.activeDocument.flatten();
