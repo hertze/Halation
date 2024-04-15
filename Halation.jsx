@@ -176,17 +176,6 @@ function processRecipe(runtimesettings) {
 	}
 }
 
-function applyThreshold(layer, value) {
-	layer.threshold(value);
-}
-
-function duplicateLayer(layer, name) {
-	var duplicate = layer.duplicate();
-	duplicate.name = name;
-	return duplicate;
-}
-
-
 function findBrightestLevelInHistogram() {
 	var histogram = app.activeDocument.histogram;
 	var brightestLevel = histogram.length - 1;
@@ -266,7 +255,7 @@ function selectLowContrastAreas(imagelayer, highPassRadius, threshold) {
     var lowContrastLayer = imagelayer.duplicate();
     lowContrastLayer.name = "Low Contrast Areas";
     lowContrastLayer.invert();
-    applyThreshold(lowContrastLayer, threshold);
+	lowContrastLayer.threshold(threshold);
 
 	lowContrastLayer.applyGaussianBlur(doc_scale*20);
 
@@ -345,16 +334,14 @@ try {
             var brightestLevel = threshold;
         }
 
-		var total_levels = 3;
+		var total_levels = 2;
 		var levels = [];
 
 		for (var i = 0; i < total_levels; i++) {
 			var red = Math.round(red_inner + (red_outer - red_inner) * (i / (total_levels - 1)));
 			var green = Math.round(green_inner + (green_outer - green_inner) * (i / (total_levels - 1)));
 			var blue = Math.round(blue_inner + (blue_outer - blue_inner) * (i / (total_levels - 1)));
-		
 			var bloomValue = bloom * (Math.log(i + 1) / Math.log(total_levels) * (1 - 1/total_levels) + 1/total_levels);
-		
 			levels.push([brightestLevel - 8 - (i * 4), bloomValue, red, green, blue]);
 		}
         
@@ -369,9 +356,8 @@ try {
 			alert("Threshold: " + levels[i][0] + ", Blur: " + levels[i][1]);
 
 			var halationLayer = originalTopmostLayer.duplicate(halationFolder, ElementPlacement.PLACEATBEGINNING);
-			halationLayer.name = "Halation " + (i + 1);
-
-			applyThreshold(halationLayer, levels[i][0]);
+			halationLayer.name = "Halation";
+			halationLayer.threshold(levels[i][0]);
 
 			app.activeDocument.activeLayer = halationLayer;
 			colorOverlay(levels[i][2], levels[i][3], levels[i][4]);
@@ -383,8 +369,8 @@ try {
 			halationLayer.blendMode = BlendMode.SCREEN;
 
 			var cutoutLayer = originalTopmostLayer.duplicate(halationFolder, ElementPlacement.PLACEATBEGINNING);
-			cutoutLayer.name = "Cutout " + (i + 1);
-			applyThreshold(cutoutLayer, levels[i][0]);
+			cutoutLayer.name = "Cutout";
+			cutoutLayer.threshold(levels[i][0]);
 			cutoutLayer.invert();
 
 			app.activeDocument.activeLayer = cutoutLayer;
@@ -403,7 +389,7 @@ try {
 
 			// If it's not the first iteration, merge halationLayer down
 			if (i < levels.length - 1) {
-				//halationLayer.merge();
+				halationLayer.merge();
 			}
 
 		}
