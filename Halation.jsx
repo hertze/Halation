@@ -14,8 +14,8 @@
 var save = false;
 var threshold = "auto";
 var min_threshold = 235;
-var bloom = 15;
-var boost = 40;
+var bloom = 50;
+var boost = 0;
 var red_inner = 204;
 var green_inner = 120;
 var blue_inner = 0;
@@ -353,10 +353,13 @@ try {
 			var green = Math.round(green_inner + (green_outer - green_inner) * (i / (total_levels - 1)));
 			var blue = Math.round(blue_inner + (blue_outer - blue_inner) * (i / (total_levels - 1)));
 		
-			levels.push([brightestLevel - 8 - (i * 4), bloom * Math.pow(0.67, total_levels - 1 - i), red, green, blue]);
+			var bloomValue = bloom * ((i / (total_levels - 1)) * (1 - 1/total_levels) + 1/total_levels);
+		
+			levels.push([brightestLevel - 8 - (i * 4), bloomValue, red, green, blue]);
 		}
         
 		var originalTopmostLayer = app.activeDocument.layers[0];
+		var lastUnmergedLayer;
 
 		// Create a new layer set named "Halation"
 		var halationFolder = app.activeDocument.layerSets.add();
@@ -394,9 +397,13 @@ try {
 			cutoutLayer.blendMode = BlendMode.MULTIPLY;
 			cutoutLayer.merge();
 
+			if (i == levels.length - 1) {
+				lastUnmergedLayer = halationLayer;
+			}
+
 			// If it's not the first iteration, merge halationLayer down
 			if (i < levels.length - 1) {
-				halationLayer.merge();
+				//halationLayer.merge();
 			}
 
 		}
@@ -404,76 +411,14 @@ try {
 		// Move the "Halation" folder above the original layer
 		halationFolder.move(originalTopmostLayer, ElementPlacement.PLACEBEFORE);
 
+		// Remove low contrast areas
+		selectLowContrastAreas(imagelayer, doc_scale*30, 50);
+		app.activeDocument.activeLayer = lastUnmergedLayer;
+		app.activeDocument.selection.fill(myColor_black);
+		app.activeDocument.selection.deselect();
 
-		throw new Error("This script is not yet finished. Please try again later.");
-
-        // Duplicate layers
-        var orangecutlayer = duplicateLayer(imagelayer, "cut");
-        var orangeredlayer = duplicateLayer(imagelayer, "orangered");
-        var orangelayer = duplicateLayer(imagelayer, "orange");
-        var redcutlayer = duplicateLayer(imagelayer, "cut");
-        var redlayer = duplicateLayer(imagelayer, "local /" + " " + brightestLevel);
-
-        // Apply threshold
-        applyThreshold(orangecutlayer, threshold);
-        applyThreshold(redcutlayer, threshold - 8);
-        applyThreshold(orangelayer, threshold);
-        applyThreshold(orangeredlayer, threshold);
-        applyThreshold(redlayer, threshold - 8);
-        
-        // Apply color overlay and rasterize
-        app.activeDocument.activeLayer = redlayer;
-        colorOverlay(red_outer, green_outer, blue_outer);
-        rasterizeLayer();
-        
-        app.activeDocument.activeLayer = orangelayer;
-        colorOverlay(red_inner, green_inner, blue_inner);
-        rasterizeLayer();
-
-        app.activeDocument.activeLayer = orangeredlayer;
-        colorOverlay(red_outer, green_outer, blue_outer);
-        rasterizeLayer();
-        
-        // Apply Gaussian blur
-        redlayer.applyGaussianBlur(Math.round(doc_scale*bloom));
-        redcutlayer.applyGaussianBlur(Math.round(doc_scale*2));
-        orangelayer.applyGaussianBlur(Math.round(doc_scale*bloom*0.67));
-        orangeredlayer.applyGaussianBlur(Math.round(doc_scale*bloom));
-        orangecutlayer.applyGaussianBlur(Math.round(doc_scale));
-        
-        // Set blend mode and merge
-        orangeredlayer.blendMode = BlendMode.SCREEN;
-        orangeredlayer.merge();
-
-        orangecutlayer.invert();
-        orangecutlayer.blendMode = BlendMode.MULTIPLY;
-        orangecutlayer.merge();
-        
-        redcutlayer.invert();
-        redcutlayer.blendMode = BlendMode.MULTIPLY;
-        redcutlayer.merge();
-        
-        orangelayer.blendMode = BlendMode.SCREEN;
-        orangelayer.merge();
-
-        // Make original layer active
-        app.activeDocument.activeLayer = imagelayer;
-
-        // Remove low contrast areas
-        selectLowContrastAreas(imagelayer, doc_scale*30, 50);
-        app.activeDocument.activeLayer = redlayer;
-        app.activeDocument.selection.fill(myColor_black);
-        app.activeDocument.selection.deselect();
-
-        // Set blend mode and adjust curves
-        redlayer.blendMode = BlendMode.SCREEN;
-        redlayer.adjustCurves([[0, 0], [40, Math.round(40+boost/5)], [85, 85+boost], [255, 255]]);
-        
-        // Group layers
-        finalGroup = app.activeDocument.layerSets.add();
-        finalGroup.name = "Halation";
-    
-        redlayer.move(finalGroup, ElementPlacement.INSIDE);
+		// Adjust curves
+        lastUnmergedLayer.adjustCurves([[0, 0], [40, Math.round(40+boost/5)], [85, 85+boost], [255, 255]]);
         
         // Flatten document and save if necessary
         app.activeDocument.flatten();
