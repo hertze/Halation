@@ -300,6 +300,8 @@ function selectLowContrastAreas(imagelayer, highPassRadius, threshold) {
 
 // Initial properties, settings and calculations
 
+var doc = app.activeDocument;
+
 app.preferences.rulerUnits = Units.PIXELS;
 app.displayDialogs = DialogModes.NO;
 
@@ -339,11 +341,58 @@ try {
         // Calculate thresholds
         if (threshold === "auto") {
             var brightestLevel = Math.max(findBrightestLevelInHistogram(), min_threshold);
-            if (threshold === "auto") threshold = brightestLevel - 8;
         } else {
-            var brightestLevel = 1;
+            var brightestLevel = threshold;
         }
+
+		var total_levels = 3;
+		var levels = [];
+
+		for (var i = 0; i < total_levels; i++) {
+			levels.push([brightestLevel - 8 - (i * 4), bloom * Math.pow(0.67, total_levels - 1 - i)]);
+		}
         
+		var originalTopmostLayer = app.activeDocument.layers[0];
+		
+		for (var i = levels.length - 1; i >= 0; i--) {
+			alert("Threshold: " + levels[i][0] + ", Blur: " + levels[i][1]);
+		
+			var halationLayer = originalTopmostLayer.duplicate(originalTopmostLayer, ElementPlacement.PLACEAFTER);
+			halationLayer.name = "Halation " + (i + 1);
+		
+			applyThreshold(halationLayer, levels[i][0]);
+		
+			app.activeDocument.activeLayer = halationLayer;
+			colorOverlay(red_outer, green_outer, blue_outer);
+		
+			rasterizeLayer();
+		
+			halationLayer.applyGaussianBlur(Math.round(levels[i][1]));
+		
+			halationLayer.blendMode = BlendMode.SCREEN;
+		
+			var cutoutLayer = originalTopmostLayer.duplicate(halationLayer, ElementPlacement.PLACEBEFORE);
+			cutoutLayer.name = "Cutout " + (i + 1);
+			applyThreshold(cutoutLayer, levels[i][0]);
+			cutoutLayer.invert();
+		
+			app.activeDocument.activeLayer = cutoutLayer;
+			colorOverlay(red_outer, green_outer, blue_outer);
+		
+			rasterizeLayer();
+		
+			cutoutLayer.applyGaussianBlur(Math.round(doc_scale));
+		
+			cutoutLayer.blendMode = BlendMode.MULTIPLY;
+			cutoutLayer.merge();
+		
+			// Move the original layer to the bottom
+			originalTopmostLayer.move(app.activeDocument, ElementPlacement.PLACEATEND);
+		}
+
+
+		throw new Error("This script is not yet finished. Please try again later.");
+
         // Duplicate layers
         var orangecutlayer = duplicateLayer(imagelayer, "cut");
         var orangeredlayer = duplicateLayer(imagelayer, "orangered");
