@@ -335,7 +335,8 @@ try {
             var brightestLevel = threshold;
         }
 
-		var total_levels = 3;
+		var total_levels = 3; // Total number of iterations of the halation effect
+		var levels_span = 20; // How many levels of the histogram should be spanned by the halation effect
 		var levels = [];
 
 		for (var i = 0; i < total_levels; i++) {
@@ -343,9 +344,13 @@ try {
 			var green = Math.round(green_inner + (green_outer - green_inner) * (i / (total_levels - 1)));
 			var blue = Math.round(blue_inner + (blue_outer - blue_inner) * (i / (total_levels - 1)));
 		
+			// Calculate bloom value
 			var bloomValue = bloom * (Math.log(i + 2) / Math.log(total_levels + 1) * (1 - 1/(total_levels + 1)) + 1/(total_levels + 1));
 		
-			levels.push([brightestLevel - 8 - (i * 4), bloomValue, red, green, blue]);
+			// Calculate threshold, start att brightestLevel - 8 and go down
+			var levelValue = brightestLevel - 8 - (i * levels_span / total_levels);
+		
+			levels.push([levelValue, bloomValue, red, green, blue]);
 		}
         
 		var originalTopmostLayer = doc.layers[0];
