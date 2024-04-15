@@ -32,25 +32,17 @@ The script takes 13 settings, written as a semicolon-separated text string (reci
 
 5. How much the effect should be boosted, from `0`to `170`.
 
-6. How much to darken midtones as compensation for the global halation, from `1` to `100`.
+6. The red value of the inner halation, from `0` to `255`.
 
-7. The red value of the inner halation, from `0` to `255`.
+7. The green value of the inner halation, from `0` to `255`.
 
-8. The green value of the inner halation, from `0` to `255`.
+8. The blue value of the inner halation, from `0` to `255`.
 
-9. The blue value of the inner halation, from `0` to `255`.
+9. The red value of the outer halation, from `0` to `255`.
 
-10. The red value of the outer halation, from `0` to `255`.
+10. The green value of the outer halation, from `0` to `255`.
 
-11. The green value of the outer halation, from `0` to `255`.
-
-12. The blue value of the outer halation, from `0` to `255`.
-
-13. The red value of the global halation, from `0` to `255`.
-
-14. The green value of the global halation, from `0` to `255`.
-
-15. The blue value of the global halation, from `0` to `255`.
+11. The blue value of the outer halation, from `0` to `255`.
 
 
 ## Tips and tricks

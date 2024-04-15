@@ -14,19 +14,14 @@
 var save = false;
 var threshold = "auto";
 var min_threshold = 235;
-var global_threshold = "auto";
 var bloom = 15;
 var boost = 40;
-var darken_global = 40;
 var red_inner = 204;
 var green_inner = 120;
 var blue_inner = 0;
 var red_outer = 204;
 var green_outer = 17;
 var blue_outer = 0;
-var red_global = 13;
-var green_global = 4;
-var blue_global = 0;
 
 // ---------------------------------------------------------------------
 
@@ -161,25 +156,20 @@ function processRecipe(runtimesettings) {
 	thisRecipe = thisRecipe.replace(/;+$/, ""); // Removes trailing ;
 	
 	// Check recipe against syntax
-	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]|(auto));([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]|(auto));([0-9]|([1-9][0-9])|100);(170|1[0-6][0-9]|[1-9][0-9]?|0);([0-9]|([1-9][0-9])|100);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]));([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$', 'gm');
+	const regex = new RegExp('^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]|(auto));([0-9]|([1-9][0-9])|100);(170|1[0-6][0-9]|[1-9][0-9]?|0);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]));([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]);([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$', 'gm');
 	
 	if (regex.exec(thisRecipe) !== null) {
 		thisRecipe = thisRecipe.split(";"); // Splits into array at ;
 		threshold = (thisRecipe[0] === "auto") ? "auto" : parseInt(thisRecipe[0]);
 		min_threshold = parseInt(thisRecipe[1]);
-		global_threshold = (thisRecipe[2] === "auto") ? "auto" : parseInt(thisRecipe[2]);
 		bloom = parseInt(thisRecipe[3]);
 		boost = parseInt(thisRecipe[4]);
-		darken_global = parseInt(thisRecipe[5]);
 		red_inner = parseInt(thisRecipe[6]);
 		green_inner = parseInt(thisRecipe[7]);
 		blue_inner = parseInt(thisRecipe[8]);
 		red_outer = parseInt(thisRecipe[9]);
 		green_outer = parseInt(thisRecipe[10]);
 		blue_outer = parseInt(thisRecipe[11]);
-		red_global = parseInt(thisRecipe[12]);
-		green_global = parseInt(thisRecipe[13]);
-		blue_global = parseInt(thisRecipe[14]);
 	} else {
 		executeScript = false;
 		alert("Sorry, but that recipe is faulty! Please check it's syntax and it's settings and then try again.");
@@ -347,10 +337,9 @@ if (runtimesettings.recipe != "none") { processRecipe(runtimesettings); }
 try {	
     if (executeScript == true) {
         // Calculate thresholds
-        if (threshold === "auto" || global_threshold === "auto") {
+        if (threshold === "auto") {
             var brightestLevel = Math.max(findBrightestLevelInHistogram(), min_threshold);
             if (threshold === "auto") threshold = brightestLevel - 8;
-            if (global_threshold === "auto") global_threshold = Math.round(brightestLevel - (65 / 255 * brightestLevel));
         } else {
             var brightestLevel = 1;
         }
@@ -368,15 +357,6 @@ try {
         applyThreshold(orangelayer, threshold);
         applyThreshold(orangeredlayer, threshold);
         applyThreshold(redlayer, threshold - 8);
-
-        // Handle darken_global
-        if (darken_global > 0) {
-            var globalcutlayer = duplicateLayer(imagelayer, "global cut");
-            var globallayer = duplicateLayer(imagelayer, "global");
-
-            applyThreshold(globalcutlayer, global_threshold);
-            applyThreshold(globallayer, global_threshold - Math.round(60/255*brightestLevel));
-        }
         
         // Apply color overlay and rasterize
         app.activeDocument.activeLayer = redlayer;
@@ -397,27 +377,6 @@ try {
         orangelayer.applyGaussianBlur(Math.round(doc_scale*bloom*0.67));
         orangeredlayer.applyGaussianBlur(Math.round(doc_scale*bloom));
         orangecutlayer.applyGaussianBlur(Math.round(doc_scale));
-        
-        // Handle darken_global
-        if (darken_global > 0) {
-            globalcutlayer.blendMode = BlendMode.DIFFERENCE;
-            globalcutlayer.merge();
-
-            globallayer.applyGaussianBlur(Math.round(doc_scale*20));
-        
-            app.activeDocument.activeLayer = globallayer;
-            colorOverlay(red_global, green_global, blue_global);
-            rasterizeLayer();
-
-            globallayer.blendMode = BlendMode.SCREEN;
-        
-            var darken = globallayer.duplicate();
-            darken.name = "darken midtones";
-            darken.desaturate();
-            darken.invert();
-            darken.blendMode = BlendMode.MULTIPLY;
-            darken.opacity = darken_global;
-        }
         
         // Set blend mode and merge
         orangeredlayer.blendMode = BlendMode.SCREEN;
@@ -450,11 +409,7 @@ try {
         // Group layers
         finalGroup = app.activeDocument.layerSets.add();
         finalGroup.name = "Halation";
-        
-        if (darken_global > 0) {
-            globallayer.move(finalGroup, ElementPlacement.INSIDE);
-            darken.move(finalGroup, ElementPlacement.INSIDE);
-        }
+    
         redlayer.move(finalGroup, ElementPlacement.INSIDE);
         
         // Flatten document and save if necessary
