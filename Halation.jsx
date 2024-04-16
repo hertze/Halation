@@ -343,15 +343,6 @@ try {
             var brightestLevel = threshold;
         }
 
-		// Select all
-		doc.selection.selectAll();
-
-		// Fill the halation layer with black color
-		doc.selection.fill(myColor_black, ColorBlendMode.NORMAL, 100, false);
-
-		// Deselect all
-		doc.selection.deselect();
-
 		var total_levels = Math.max(2, Math.min(5, Math.ceil(bloom / 5))); // Total number of iterations of the halation effect
 
 		var levels_span = 20; // How many levels of the histogram should be spanned by the halation effect
@@ -410,7 +401,7 @@ try {
 			bitmapToSelection(templayer);
 			doc.selection.contract(doc_scale*2); // Make sure halation bleeds into the image
 			doc.selection.feather(doc_scale*2);
-			doc.selection.fill(myColor_black);
+			doc.selection.fill(myColor_black, ColorBlendMode.CLEAR);
 
 			templayer.remove(); // Remove the temp layer
 			doc.selection.deselect(); // Deselect the selection
@@ -420,12 +411,12 @@ try {
 		// Remove low contrast areas
 		selectLowContrastAreas(imagelayer, doc_scale*30, 50);
 		doc.activeLayer = halationlayer;
-		doc.selection.fill(myColor_black);
+		doc.selection.fill(myColor_black, ColorBlendMode.CLEAR);
 		doc.selection.deselect();
 
 		// Adjust curves
         if (boost > 0) {
-			halationlayer.adjustCurves([[0, 0], [85, 85+boost], [255, 255]]);
+			halationlayer.adjustCurves([[0, 0], [40, Math.round(40+boost/5)], [85, 85+boost], [255, 255]]);
 		}
         
         // Flatten document and save if needed
