@@ -13,7 +13,7 @@
 
 var threshold = "auto";
 var min_threshold = 235;
-var bloom = 15;
+var bloom = 40;
 var boost = 0;
 var red_inner = 235;
 var green_inner = 180;
@@ -281,7 +281,7 @@ function selectLowContrastAreas(imagelayer, highPassRadius, threshold) {
     bitmapToSelection(lowContrastLayer);
 
 	try {
-		doc.selection.contract(UnitValue(Math.round(doc_scale*bloom), "px")); // Contract the selection
+		doc.selection.contract(UnitValue(Math.round(doc_scale), "px")); // Contract the selection
 	} catch (e) {
 		// An error will be thrown if there is no selection, so you can ignore it
 	}
