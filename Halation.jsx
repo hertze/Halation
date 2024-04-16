@@ -13,12 +13,12 @@
 
 var threshold = "auto";
 var min_threshold = 235;
-var bloom = 40;
+var bloom = 60;
 var boost = 0;
-var red_inner = 235;
+var red_inner = 200;
 var green_inner = 180;
 var blue_inner = 0;
-var red_outer = 235;
+var red_outer = 200;
 var green_outer = 0;
 var blue_outer = 0;
 
@@ -251,24 +251,6 @@ function saveClose() {
 	doc.close(SaveOptions.DONOTSAVECHANGES);
 }
 
-function bitmapToSelection(layer) {
-	// Create an alpha channel from the low contrast layer
-    var alphaChannel = doc.channels.add();
-    alphaChannel.kind = ChannelType.SELECTEDAREA;
-    alphaChannel.name = "Selection";
-
-    // Copy the low contrast layer to the alpha channel
-    layer.copy();
-    doc.activeChannels = [alphaChannel];
-    doc.paste();
-
-    // Load the alpha channel into the selection
-    doc.selection.load(alphaChannel);
-
-	// Delete the alpha channel
-    alphaChannel.remove();
-}
-
 function selectLowContrastAreas(imagelayer, highPassRadius, threshold) {
 
     var lowContrastLayer = imagelayer.duplicate();
@@ -278,16 +260,30 @@ function selectLowContrastAreas(imagelayer, highPassRadius, threshold) {
 
 	lowContrastLayer.applyGaussianBlur(doc_scale*20);
 
-    bitmapToSelection(lowContrastLayer);
+    // Create an alpha channel from the low contrast layer
+    var alphaChannel = doc.channels.add();
+    alphaChannel.kind = ChannelType.SELECTEDAREA;
+    alphaChannel.name = "Low Contrast Areas";
+
+    // Copy the low contrast layer to the alpha channel
+    lowContrastLayer.copy();
+    doc.activeChannels = [alphaChannel];
+    doc.paste();
+
+    // Load the alpha channel into the selection
+    doc.selection.load(alphaChannel);
 
 	try {
-		doc.selection.contract(UnitValue(Math.round(doc_scale), "px")); // Contract the selection
+		doc.selection.contract(UnitValue(Math.round(doc_scale*bloom), "px")); // Contract the selection
 	} catch (e) {
 		// An error will be thrown if there is no selection, so you can ignore it
 	}
 
 	// Delete the low contrast layer
 	lowContrastLayer.remove();
+
+	// Delete the alpha channel
+    alphaChannel.remove();
 
 }
 
@@ -310,19 +306,15 @@ var negative_size = ratio > 1 ? doc_width : doc_height;
 // Scale
 var doc_scale = negative_size.value / 3600;
 
-var myColor_black = new SolidColor(); 
-myColor_black.rgb.red = 0; 
-myColor_black.rgb.green = 0;  
-myColor_black.rgb.blue = 0;
-
 // Sets up existing image layer
 doc.activeLayer.isBackgroundLayer = false; // Unlocks background layer
 var imagelayer = doc.activeLayer;
 imagelayer.name = "original"; // Names background layer
 
-var halationlayer = doc.artLayers.add();
-halationlayer.name = "Halation";
-halationlayer.blendMode = BlendMode.SCREEN;
+var myColor_black = new SolidColor(); 
+myColor_black.rgb.red = 0; 
+myColor_black.rgb.green = 0;  
+myColor_black.rgb.blue = 0;
 
 
 //
@@ -343,8 +335,7 @@ try {
             var brightestLevel = threshold;
         }
 
-		var total_levels = Math.max(2, Math.min(5, Math.ceil(bloom / 5))); // Total number of iterations of the halation effect
-
+		var total_levels = 4; // Total number of iterations of the halation effect
 		var levels_span = 20; // How many levels of the histogram should be spanned by the halation effect
 		var levels = []; // Array to store the halation layer values
 
@@ -354,7 +345,7 @@ try {
 			var blue = Math.round(blue_inner + (blue_outer - blue_inner) * (i / (total_levels - 1)));
 		
 			// Calculate bloom value
-			var bloomValue = bloom * (i / total_levels);
+			var bloomValue = bloom * (Math.log(i + 2) / Math.log(total_levels + 1) * (1 - 1/(total_levels + 1)) + 1/(total_levels + 1));
 		
 			// Calculate threshold, start att brightestLevel - 8 and go down
 			var levelValue = brightestLevel - 8 - (i * levels_span / total_levels);
@@ -365,59 +356,61 @@ try {
 		// Save for later use
 		var originalTopmostLayer = doc.layers[0];
 
-		// Create new layer
-		var templayer;
-
-		var color = new SolidColor();
+		// Create a new layer set named "Halation"
+		var halationFolder = doc.layerSets.add();
+		halationFolder.name = "Halation";
 
 		// Iterate over the levels array in reverse order
 		for (var i = levels.length - 1; i >= 0; i--) {
 
-			// Copy halationlayer
-			templayer = imagelayer.duplicate();
+			// Create and configure the halation layer
+			var halationLayer = originalTopmostLayer.duplicate(halationFolder, ElementPlacement.PLACEATBEGINNING);
+			halationLayer.name = "Halation"; // Naming the layer "Halation" followed by its order
+			halationLayer.threshold(levels[i][0]); // Apply a threshold based on the current level
+			doc.activeLayer = halationLayer; // Set the active layer to the halation layer
+			colorOverlay(levels[i][2], levels[i][3], levels[i][4]); // Apply a color overlay based on the current level
+			rasterizeLayer(); // Rasterize the halation layer
+			halationLayer.applyGaussianBlur(Math.round(doc_scale*levels[i][1])); // Apply a Gaussian blur based on the current level
+			halationLayer.blendMode = BlendMode.SCREEN; // Set the blend mode of the halation layer to Screen
 
-			// Apply threshold to the temp layer
-			templayer.threshold(levels[i][0]); // Apply a threshold based on the current level
-			templayer.invert(); // Invert the temp layer
+			// Create and configure the cutout layer
+			var cutoutLayer = originalTopmostLayer.duplicate(halationFolder, ElementPlacement.PLACEATBEGINNING);
+			cutoutLayer.name = "Cutout"; // Naming the layer "Cutout" followed by its order
+			cutoutLayer.threshold(levels[i][0]); // Apply a threshold based on the current level
+			cutoutLayer.invert(); // Invert the cutout layer
+			doc.activeLayer = cutoutLayer; // Set the active layer to the cutout layer
+			colorOverlay(levels[i][2], levels[i][3], levels[i][4]); // Apply a color overlay based on the current level
+			rasterizeLayer(); // Rasterize the cutout layer
+			cutoutLayer.applyGaussianBlur(Math.round(doc_scale)); // Apply a Gaussian blur based on the document scale
+			cutoutLayer.blendMode = BlendMode.MULTIPLY; // Set the blend mode of the cutout layer to Multiply
+			cutoutLayer.merge(); // Merge the cutout layer down
 
-			// Create selection from threshold
-			bitmapToSelection(templayer);
+			// If it's the first iteration, store the halation layer in lastUnmergedLayer
+			if (i == levels.length - 1) {
+				var lastUnmergedLayer = halationLayer;
+			}
 
-			// Create solid color
-			color.rgb.red = levels[i][2];
-			color.rgb.green = levels[i][3];
-			color.rgb.blue = levels[i][4];
-
-			// Make halationlayer active
-			doc.activeLayer = halationlayer;
-
-			// Feater selection	
-			doc.selection.feather(doc_scale*levels[i][1]);
-
-			// Fill selection with color
-			doc.selection.fill(color, ColorBlendMode.SCREEN);
-
-			// Create selection from threshold again
-			bitmapToSelection(templayer);
-			doc.selection.contract(doc_scale*2);
-			doc.selection.feather(doc_scale*2);
-
-			doc.selection.fill(myColor_black, ColorBlendMode.CLEAR);
-
-			templayer.remove(); // Remove the temp layer
-			doc.selection.deselect(); // Deselect the selection
+			// If it's not the first iteration, merge halationLayer down
+			if (i < levels.length - 1) {
+				halationLayer.merge();
+			}
 			
 		}
 
+		// Move the "Halation" folder above the original layer
+		halationFolder.move(originalTopmostLayer, ElementPlacement.PLACEBEFORE);
+
+		
+
 		// Remove low contrast areas
 		selectLowContrastAreas(imagelayer, doc_scale*30, 50);
-		doc.activeLayer = halationlayer;
-		doc.selection.fill(myColor_black, ColorBlendMode.CLEAR);
+		doc.activeLayer = lastUnmergedLayer;
+		doc.selection.fill(myColor_black);
 		doc.selection.deselect();
 
 		// Adjust curves
         if (boost > 0) {
-			halationlayer.adjustCurves([[0, 0], [40, Math.round(40+boost/5)], [85, 85+boost], [255, 255]]);
+			lastUnmergedLayer.adjustCurves([[0, 0], [40, Math.round(40+boost/5)], [85, 85+boost], [255, 255]]);
 		}
         
         // Flatten document and save if needed
