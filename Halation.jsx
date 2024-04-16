@@ -408,7 +408,8 @@ try {
 
 			// Create selection from threshold again
 			bitmapToSelection(templayer);
-			doc.selection.feather(doc_scale);
+			doc.selection.contract(doc_scale*2); // Make sure halation bleeds into the image
+			doc.selection.feather(doc_scale*2);
 			doc.selection.fill(myColor_black);
 
 			templayer.remove(); // Remove the temp layer
