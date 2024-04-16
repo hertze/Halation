@@ -13,8 +13,8 @@
 
 var threshold = "auto";
 var min_threshold = 235;
-var bloom = 10;
-var boost = 0;
+var bloom = 60;
+var boost = 50;
 var red_inner = 200;
 var green_inner = 180;
 var blue_inner = 0;
@@ -425,7 +425,7 @@ try {
 
 		// Adjust curves
         if (boost > 0) {
-			halationlayer.adjustCurves([[0, 0], [40, Math.round(40+boost/5)], [85, 85+boost], [255, 255]]);
+			halationlayer.adjustCurves([[0, 0], [85, 85+boost], [255, 255]]);
 		}
         
         // Flatten document and save if needed
