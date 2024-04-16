@@ -13,7 +13,7 @@
 
 var threshold = "auto";
 var min_threshold = 235;
-var bloom = 60;
+var bloom = 15;
 var boost = 0;
 var red_inner = 200;
 var green_inner = 180;
@@ -278,18 +278,7 @@ function selectLowContrastAreas(imagelayer, highPassRadius, threshold) {
 
 	lowContrastLayer.applyGaussianBlur(doc_scale*20);
 
-    // Create an alpha channel from the low contrast layer
-    var alphaChannel = doc.channels.add();
-    alphaChannel.kind = ChannelType.SELECTEDAREA;
-    alphaChannel.name = "Low Contrast Areas";
-
-    // Copy the low contrast layer to the alpha channel
-    lowContrastLayer.copy();
-    doc.activeChannels = [alphaChannel];
-    doc.paste();
-
-    // Load the alpha channel into the selection
-    doc.selection.load(alphaChannel);
+    bitmapToSelection(lowContrastLayer);
 
 	try {
 		doc.selection.contract(UnitValue(Math.round(doc_scale*bloom), "px")); // Contract the selection
@@ -300,8 +289,7 @@ function selectLowContrastAreas(imagelayer, highPassRadius, threshold) {
 	// Delete the low contrast layer
 	lowContrastLayer.remove();
 
-	// Delete the alpha channel
-    alphaChannel.remove();
+
 
 }
 
