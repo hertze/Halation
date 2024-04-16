@@ -354,7 +354,7 @@ try {
 			var blue = Math.round(blue_inner + (blue_outer - blue_inner) * (i / (total_levels - 1)));
 		
 			// Calculate bloom value
-			var bloomValue = bloom * (Math.log(i + 2) / Math.log(total_levels + 1) * (1 - 1/(total_levels + 1)) + 1/(total_levels + 1));
+			var bloomValue = bloom * (i / total_levels);
 		
 			// Calculate threshold, start att brightestLevel - 8 and go down
 			var levelValue = brightestLevel - 8 - (i * levels_span / total_levels);
@@ -392,7 +392,7 @@ try {
 			doc.activeLayer = halationlayer;
 
 			// Feater selection	
-			doc.selection.expand(doc_scale*2); // Expand the selection
+			//doc.selection.expand(doc_scale*2); // Expand the selection
 			doc.selection.feather(doc_scale*levels[i][1]);
 
 			// Fill selection with color
@@ -402,6 +402,7 @@ try {
 			bitmapToSelection(templayer);
 			//doc.selection.contract(doc_scale*2); // Make sure halation bleeds into the image
 			doc.selection.feather(doc_scale*2);
+
 			doc.selection.fill(myColor_black, ColorBlendMode.CLEAR);
 
 			templayer.remove(); // Remove the temp layer
