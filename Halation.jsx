@@ -13,8 +13,8 @@
 
 var threshold = "auto";
 var min_threshold = 235;
-var bloom = 60;
-var boost = 50;
+var bloom = 15;
+var boost = 0;
 var red_inner = 200;
 var green_inner = 180;
 var blue_inner = 0;
@@ -395,7 +395,7 @@ try {
 			doc.selection.feather(doc_scale*levels[i][1]);
 
 			// Fill selection with color
-			doc.selection.fill(color);
+			doc.selection.fill(color, ColorBlendMode.SCREEN);
 
 			// Create selection from threshold again
 			bitmapToSelection(templayer);
