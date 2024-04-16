@@ -400,6 +400,8 @@ try {
 		// Move the "Halation" folder above the original layer
 		halationFolder.move(originalTopmostLayer, ElementPlacement.PLACEBEFORE);
 
+		
+
 		// Remove low contrast areas
 		selectLowContrastAreas(imagelayer, doc_scale*30, 50);
 		doc.activeLayer = lastUnmergedLayer;
