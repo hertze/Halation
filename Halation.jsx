@@ -13,7 +13,7 @@
 
 var threshold = "auto";
 var min_threshold = 235;
-var bloom = 15;
+var bloom = 10;
 var boost = 0;
 var red_inner = 200;
 var green_inner = 180;
@@ -289,8 +289,6 @@ function selectLowContrastAreas(imagelayer, highPassRadius, threshold) {
 	// Delete the low contrast layer
 	lowContrastLayer.remove();
 
-
-
 }
 
 
@@ -354,8 +352,8 @@ try {
 		// Deselect all
 		doc.selection.deselect();
 
+		var total_levels = Math.max(2, Math.min(5, Math.ceil(bloom / 5))); // Total number of iterations of the halation effect
 
-		var total_levels = 4; // Total number of iterations of the halation effect
 		var levels_span = 20; // How many levels of the histogram should be spanned by the halation effect
 		var levels = []; // Array to store the halation layer values
 
