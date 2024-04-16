@@ -274,7 +274,7 @@ function selectLowContrastAreas(imagelayer, highPassRadius, threshold) {
     doc.selection.load(alphaChannel);
 
 	try {
-		doc.selection.contract(UnitValue(Math.round(doc_scale*bloom), "px")); // Contract the selection
+		doc.selection.contract(UnitValue(Math.round(doc_scale), "px")); // Contract the selection
 	} catch (e) {
 		// An error will be thrown if there is no selection, so you can ignore it
 	}
@@ -335,7 +335,7 @@ try {
             var brightestLevel = threshold;
         }
 
-		var total_levels = 4; // Total number of iterations of the halation effect
+		var total_levels = Math.max(2, Math.min(5, Math.ceil(bloom / 5))); // Total number of iterations of the halation effect
 		var levels_span = 20; // How many levels of the histogram should be spanned by the halation effect
 		var levels = []; // Array to store the halation layer values
 
@@ -345,7 +345,7 @@ try {
 			var blue = Math.round(blue_inner + (blue_outer - blue_inner) * (i / (total_levels - 1)));
 		
 			// Calculate bloom value
-			var bloomValue = bloom * (Math.log(i + 2) / Math.log(total_levels + 1) * (1 - 1/(total_levels + 1)) + 1/(total_levels + 1));
+			var bloomValue = bloom * (i / total_levels);
 		
 			// Calculate threshold, start att brightestLevel - 8 and go down
 			var levelValue = brightestLevel - 8 - (i * levels_span / total_levels);
