@@ -15,10 +15,10 @@ var threshold = "auto";
 var min_threshold = 235;
 var bloom = 15;
 var boost = 0;
-var red_inner = 200;
+var red_inner = 235;
 var green_inner = 180;
 var blue_inner = 0;
-var red_outer = 200;
+var red_outer = 235;
 var green_outer = 0;
 var blue_outer = 0;
 
@@ -399,7 +399,9 @@ try {
 
 			// Create selection from threshold again
 			bitmapToSelection(templayer);
+			doc.selection.contract(doc_scale*2);
 			doc.selection.feather(doc_scale*2);
+
 			doc.selection.fill(myColor_black, ColorBlendMode.CLEAR);
 
 			templayer.remove(); // Remove the temp layer
