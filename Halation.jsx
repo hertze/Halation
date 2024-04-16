@@ -13,7 +13,7 @@
 
 var threshold = "auto";
 var min_threshold = 235;
-var bloom = 15;
+var bloom = 10;
 var boost = 0;
 var red_inner = 200;
 var green_inner = 180;
@@ -392,6 +392,7 @@ try {
 			doc.activeLayer = halationlayer;
 
 			// Feater selection	
+			doc.selection.expand(doc_scale*2); // Expand the selection
 			doc.selection.feather(doc_scale*levels[i][1]);
 
 			// Fill selection with color
