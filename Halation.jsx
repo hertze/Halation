@@ -13,12 +13,12 @@
 
 var threshold = "auto";
 var min_threshold = 235;
-var bloom = 60;
+var bloom = 40;
 var boost = 0;
-var red_inner = 200;
+var red_inner = 255;
 var green_inner = 180;
-var blue_inner = 0;
-var red_outer = 200;
+var blue_inner = 50;
+var red_outer = 235;
 var green_outer = 0;
 var blue_outer = 0;
 
@@ -251,10 +251,11 @@ function saveClose() {
 	doc.close(SaveOptions.DONOTSAVECHANGES);
 }
 
-function selectLowContrastAreas(imagelayer, highPassRadius, threshold) {
+function selectLowContrastAreas(imagelayer, threshold) {
 
     var lowContrastLayer = imagelayer.duplicate();
     lowContrastLayer.name = "Low Contrast Areas";
+
     lowContrastLayer.invert();
 	lowContrastLayer.threshold(threshold);
 
@@ -274,7 +275,7 @@ function selectLowContrastAreas(imagelayer, highPassRadius, threshold) {
     doc.selection.load(alphaChannel);
 
 	try {
-		doc.selection.contract(UnitValue(Math.round(doc_scale), "px")); // Contract the selection
+		doc.selection.contract(UnitValue(Math.round(doc_scale*20), "px")); // Contract the selection
 	} catch (e) {
 		// An error will be thrown if there is no selection, so you can ignore it
 	}
@@ -345,7 +346,7 @@ try {
 			var blue = Math.round(blue_inner + (blue_outer - blue_inner) * (i / (total_levels - 1)));
 		
 			// Calculate bloom value
-			var bloomValue = bloom * (i / total_levels);
+			var bloomValue = bloom * (i / total_levels); // Increase
 		
 			// Calculate threshold, start att brightestLevel - 8 and go down
 			var levelValue = brightestLevel - 8 - (i * levels_span / total_levels);
@@ -403,7 +404,7 @@ try {
 		
 
 		// Remove low contrast areas
-		selectLowContrastAreas(imagelayer, doc_scale*30, 50);
+		selectLowContrastAreas(imagelayer, 50);
 		doc.activeLayer = lastUnmergedLayer;
 		doc.selection.fill(myColor_black);
 		doc.selection.deselect();
