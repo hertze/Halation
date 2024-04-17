@@ -13,7 +13,7 @@
 
 var threshold = "auto";
 var min_threshold = 235;
-var bloom = 40;
+var bloom = 15;
 var boost = 0;
 var red_inner = 255;
 var green_inner = 180;
@@ -347,7 +347,7 @@ try {
 		
 			// Calculate bloom value
 			var bloomValue = bloom * (i / total_levels); // Increase
-		
+			
 			// Calculate threshold, start att brightestLevel - 8 and go down
 			var levelValue = brightestLevel - 8 - (i * levels_span / total_levels);
 		
