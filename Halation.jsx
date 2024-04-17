@@ -259,7 +259,7 @@ function selectLowContrastAreas(imagelayer, threshold) {
     lowContrastLayer.invert();
 	lowContrastLayer.threshold(threshold);
 
-	lowContrastLayer.applyGaussianBlur(doc_scale*20);
+	lowContrastLayer.applyGaussianBlur(doc_scale*10);
 
     // Create an alpha channel from the low contrast layer
     var alphaChannel = doc.channels.add();
@@ -275,7 +275,7 @@ function selectLowContrastAreas(imagelayer, threshold) {
     doc.selection.load(alphaChannel);
 
 	try {
-		doc.selection.contract(UnitValue(Math.round(doc_scale*20), "px")); // Contract the selection
+		doc.selection.contract(UnitValue(Math.round(doc_scale*10), "px")); // Contract the selection
 	} catch (e) {
 		// An error will be thrown if there is no selection, so you can ignore it
 	}
@@ -346,7 +346,8 @@ try {
 			var blue = Math.round(blue_inner + (blue_outer - blue_inner) * (i / (total_levels - 1)));
 		
 			// Calculate bloom value
-			var bloomValue = bloom * (i / total_levels); // Increase
+			//var bloomValue = bloom * (i / total_levels); // Increase
+			var bloomValue = bloom - ((bloom * 0.67) * (i / (total_levels - 1))); //Decrease
 			
 			// Calculate threshold, start att brightestLevel - 8 and go down
 			var levelValue = brightestLevel - 8 - (i * levels_span / total_levels);
@@ -374,6 +375,17 @@ try {
 			halationLayer.applyGaussianBlur(Math.round(doc_scale*levels[i][1])); // Apply a Gaussian blur based on the current level
 			halationLayer.blendMode = BlendMode.SCREEN; // Set the blend mode of the halation layer to Screen
 
+			if (i != levels.length - 1) {
+				var secondHalationLayer = originalTopmostLayer.duplicate(halationFolder, ElementPlacement.PLACEATBEGINNING);
+				secondHalationLayer.name = "Halation"; // Naming the layer "Halation" followed by its order
+				secondHalationLayer.threshold(levels[i][0]); // Apply a threshold based on the current level
+				doc.activeLayer = secondHalationLayer; // Set the active layer to the halation layer
+				colorOverlay(levels[levels.length - 1][2], levels[levels.length - 1][3], levels[levels.length - 1][4]); // Apply a color overlay based on the current level
+				rasterizeLayer(); // Rasterize the halation layer
+				secondHalationLayer.applyGaussianBlur(Math.round(1.33*doc_scale*levels[i][1])); // Apply a Gaussian blur based on the current level
+				secondHalationLayer.blendMode = BlendMode.SCREEN; // Set the blend mode of the halation layer to Screen
+			}
+
 			// Create and configure the cutout layer
 			var cutoutLayer = originalTopmostLayer.duplicate(halationFolder, ElementPlacement.PLACEATBEGINNING);
 			cutoutLayer.name = "Cutout"; // Naming the layer "Cutout" followed by its order
@@ -389,6 +401,10 @@ try {
 			// If it's the first iteration, store the halation layer in lastUnmergedLayer
 			if (i == levels.length - 1) {
 				var lastUnmergedLayer = halationLayer;
+			}
+
+			if (i != levels.length - 1) {
+				secondHalationLayer.merge();
 			}
 
 			// If it's not the first iteration, merge halationLayer down
