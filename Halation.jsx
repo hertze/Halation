@@ -259,7 +259,9 @@ function selectLowContrastAreas(imagelayer, threshold) {
     lowContrastLayer.invert();
 	lowContrastLayer.threshold(threshold);
 
-	lowContrastLayer.applyGaussianBlur(doc_scale * Math.min(bloom/3, 20));
+	var fuzz = doc_scale * Math.min(bloom, 20);
+
+	lowContrastLayer.applyGaussianBlur(fuzz/2);
 
     // Create an alpha channel from the low contrast layer
     var alphaChannel = doc.channels.add();
@@ -275,7 +277,7 @@ function selectLowContrastAreas(imagelayer, threshold) {
     doc.selection.load(alphaChannel);
 
 	try {
-		doc.selection.contract(UnitValue(Math.round(doc_scale * Math.min(bloom/3, 20)), "px")); // Contract the selection
+		doc.selection.contract(UnitValue(Math.round(doc_scale * Math.min(bloom, 20)), "px")); // Contract the selection
 	} catch (e) {
 		// An error will be thrown if there is no selection, so you can ignore it
 	}
