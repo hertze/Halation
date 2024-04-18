@@ -1,6 +1,6 @@
 // H A L A T I O N
 //
-// Version 1.5.0
+// Version 2.0
 //
 // by Joakim Hertze (www.hertze.se)
 //
