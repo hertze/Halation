@@ -396,9 +396,6 @@ try {
 			cutoutLayer.name = "Cutout"; // Naming the layer "Cutout" followed by its order
 			cutoutLayer.threshold(levels[i][0]); // Apply a threshold based on the current level
 			cutoutLayer.invert(); // Invert the cutout layer
-			//doc.activeLayer = cutoutLayer; // Set the active layer to the cutout layer
-			//colorOverlay(levels[i][2], levels[i][3], levels[i][4]); // Apply a color overlay based on the current level
-			//rasterizeLayer(); // Rasterize the cutout layer
 			cutoutLayer.applyGaussianBlur(Math.round(doc_scale)); // Apply a Gaussian blur based on the document scale
 			cutoutLayer.blendMode = BlendMode.MULTIPLY; // Set the blend mode of the cutout layer to Multiply
 			cutoutLayer.merge(); // Merge the cutout layer down
@@ -417,8 +414,6 @@ try {
 
 		// Move the "Halation" folder above the original layer
 		halationFolder.move(originalTopmostLayer, ElementPlacement.PLACEBEFORE);
-
-		
 
 		// Remove low contrast areas
 		selectLowContrastAreas(imagelayer, 50);
