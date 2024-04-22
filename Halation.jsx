@@ -388,7 +388,6 @@ try {
 				secondHalationLayer.blendMode = BlendMode.SCREEN; // Set the blend mode of the halation layer to Screen
 				// Merge the halation layers down
 				halationLayer.merge();
-				secondHalationLayer.merge();
 			}
 
 			// Create and configure the cutout layer
@@ -405,9 +404,9 @@ try {
 				var lastUnmergedLayer = halationLayer;
 			}
 
-			// If it's not the first iteration, merge halationLayer down
-			if (i < levels.length - 1) {
-				//halationLayer.merge();
+			// Merge the halation layers down
+			if (i != levels.length - 1) {
+				secondHalationLayer.merge();
 			}
 			
 		}
