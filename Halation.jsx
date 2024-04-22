@@ -345,9 +345,8 @@ try {
 			var green = Math.round(green_inner + (green_outer - green_inner) * (i / (total_levels - 1)));
 			var blue = Math.round(blue_inner + (blue_outer - blue_inner) * (i / (total_levels - 1)));
 		
-			// Calculate bloom value
-			//var bloomValue = bloom * (i / total_levels); // Increase
-			var bloomValue = bloom - ((bloom * 0.67) * (i / (total_levels - 1))); //Decrease
+			// Calculate bloom value, start at bloom and go down
+			var bloomValue = bloom - ((bloom * 0.67) * (i / (total_levels - 1)));
 			
 			// Calculate threshold, start att brightestLevel - 8 and go down
 			var levelValue = brightestLevel - 8 - (i * levels_span / total_levels);
@@ -376,7 +375,6 @@ try {
 			halationLayer.blendMode = BlendMode.SCREEN; // Set the blend mode of the halation layer to Screen
 
 			if (i != levels.length - 1) {
-
 				var secondHalationLayer = imagelayer.duplicate();
 				secondHalationLayer.move(halationLayer, ElementPlacement.PLACEAFTER);
 				secondHalationLayer.name = "Halation"; // Naming the layer "Halation" followed by its order
@@ -408,7 +406,6 @@ try {
 			if (i != levels.length - 1) {
 				secondHalationLayer.merge();
 			}
-			
 		}
 
 		// Move the "Halation" folder above the original layer
