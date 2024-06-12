@@ -14,6 +14,7 @@
 var threshold = "auto";
 var min_threshold = 235;
 var bloom = 15;
+var contrast_threshold = 50;
 var boost = 0;
 var red_inner = 255;
 var green_inner = 180;
@@ -412,7 +413,7 @@ try {
 		halationFolder.move(originalTopmostLayer, ElementPlacement.PLACEBEFORE);
 
 		// Remove low contrast areas
-		selectLowContrastAreas(imagelayer, 50);
+		selectLowContrastAreas(imagelayer, contrast_threshold);
 		doc.activeLayer = lastUnmergedLayer;
 		doc.selection.fill(myColor_black);
 		doc.selection.deselect();
