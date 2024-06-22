@@ -14,7 +14,6 @@
 var threshold = "auto";
 var min_threshold = 235;
 var bloom = 15;
-var contrast_threshold = 50;
 var boost = 0;
 var red_inner = 255;
 var green_inner = 180;
@@ -23,6 +22,7 @@ var red_outer = 235;
 var green_outer = 0;
 var blue_outer = 0;
 
+var contrast_threshold = 50;
 var save = false;
 
 // ---------------------------------------------------------------------
