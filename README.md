@@ -4,7 +4,7 @@ This is a script plugin for Photoshop that simulates film-like halation.
 
 ## How to install
 
-1. Download and unzip the software, if the latter isn’t done automatically. The resulting folder contains the main script **Halation.jsx** and three action sets, **Halation.atn** and **Halation-mono.atn**.
+1. Download and unzip the software, if the latter isn’t done automatically. The resulting folder contains the main script **Halation.jsx** and two action sets, **Halation.atn** and **Halation-mono.atn**.
 
 2. Quit Photoshop.
 
