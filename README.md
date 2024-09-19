@@ -22,9 +22,9 @@ You run the script by running on of the supplied actions, or by making your own 
 
 The script takes a number of settings, written as a semicolon-separated text string (recipe):
 
-1. The highlight threshold for local halation, from `1` to `255`, or `auto`.
+1. The highlight threshold, from `1` to `255`, or `auto`.
 
-2. The minimum highlight threshold for local halation, from `1` to `255`.
+2. The minimum highlight threshold, from `1` to `255`.
 
 3. The bloom (halo radius), from `1` to `100`.
 
@@ -47,4 +47,4 @@ The script takes a number of settings, written as a semicolon-separated text str
 
 1. If you want to change the color values in actions, darker colors results in a weaker effekt and brighter colors in a stronger effect. If you set the red, green and blue color to the same value you get a grayscale color, useful for monochrome halation.
 
-2. Setting #1 `auto` means the script will determine the brightest level in your image and calculate where to place local and global halation from there. #2 then puts a lower cap on that value.
+2. Setting #1 `auto` means the script will determine the brightest level in your image and calculate where to place the halation range from there. #2 then puts a lower cap on that value.
